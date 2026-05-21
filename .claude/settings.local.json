@@ -6,7 +6,13 @@
       "Bash(git init)",
       "Bash(git config user.name \"Baxtiyor Aliev\")",
       "Bash(git config user.email \"alievbaxtiyor@gmail.com\")",
-      "Bash(git add .)"
+      "Bash(git add .)",
+      "Bash(git commit -m \"Initial commit: LMS.uz landing page with animations and integrations\")",
+      "Bash(git remote add origin https://github.com/alievbaxtiyor/lms-landing.git)",
+      "Bash(git branch -M main)",
+      "Bash(git push -u origin main)",
+      "Bash(git commit -m \"Rename Landing Page.html to index.html for Netlify deployment\")",
+      "Bash(git push origin main)"
     ],
     "deny": [],
     "ask": []

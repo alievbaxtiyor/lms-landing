@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir images /b)",
+      "Bash(findstr /i \"lms\")",
+      "Bash(git init)",
+      "Bash(git config user.name \"Baxtiyor Aliev\")",
+      "Bash(git config user.email \"alievbaxtiyor@gmail.com\")",
+      "Bash(git add .)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

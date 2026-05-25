@@ -12,7 +12,12 @@
       "Bash(git branch -M main)",
       "Bash(git push -u origin main)",
       "Bash(git commit -m \"Rename Landing Page.html to index.html for Netlify deployment\")",
-      "Bash(git push origin main)"
+      "Bash(git push origin main)",
+      "Bash(dir /b images)",
+      "Bash(npm create vite@latest lms-vue -- --template vue)",
+      "Bash(npm install)",
+      "Bash(xcopy /E /I /Y images lms-vuepublicimages)",
+      "Bash(npm run dev)"
     ],
     "deny": [],
     "ask": []

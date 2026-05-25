@@ -1,0 +1,363 @@
+/* LMS.uz - Custom Animations and Overrides */
+
+.btn--link:hover { color: #9fe870 !important; }
+.ai__feature-head .tag { color: #9fe870 !important; background: #e8f7db !important; }
+.ai__feature, .ai__side { border-color: #9fe870 !important; }
+.section-eyebrow { color: #9fe870 !important; }
+.mod__n { color: #9fe870 !important; }
+.modules li { border-top-color: #9fe870 !important; }
+.modules li:last-child { border-bottom-color: #9fe870 !important; }
+.tbl th, .tbl td { border-bottom-color: #9fe870 !important; }
+.reports-list li { border-top-color: #9fe870 !important; }
+.ig { border-color: #9fe870 !important; }
+.ig__mk { border-color: #9fe870 !important; background: #e8f7db !important; }
+
+/* Course stack vertical carousel animation */
+@keyframes verticalScroll {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.course-stack {
+  overflow: hidden;
+  position: relative;
+  height: 700px;
+}
+
+.course-stack-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: verticalScroll 40s linear infinite;
+  will-change: transform;
+}
+
+.course-stack .shot {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* Scroll Animation Styles */
+.fade-in {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fade-in-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.scale-in {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.scale-in.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Stagger animation delays */
+.fade-in:nth-child(1) { transition-delay: 0.1s; }
+.fade-in:nth-child(2) { transition-delay: 0.2s; }
+.fade-in:nth-child(3) { transition-delay: 0.3s; }
+.fade-in:nth-child(4) { transition-delay: 0.4s; }
+.fade-in:nth-child(5) { transition-delay: 0.5s; }
+.fade-in:nth-child(6) { transition-delay: 0.6s; }
+.fade-in:nth-child(7) { transition-delay: 0.7s; }
+
+/* HEMIS Sync Animation */
+.hemis-sync-visual {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32px;
+  background: linear-gradient(135deg, #f8fdf5 0%, #e8f7db 100%);
+  border-radius: 16px;
+  gap: 24px;
+}
+
+.sync-endpoint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.sync-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+}
+
+.sync-line-container {
+  flex: 1;
+  position: relative;
+  height: 3px;
+  margin: 0 20px;
+}
+
+.sync-line {
+  width: 100%;
+  height: 3px;
+  background: #9fe870;
+  border-radius: 2px;
+  opacity: 0.3;
+}
+
+@keyframes syncFlow {
+  0% {
+    left: -20px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% + 20px);
+    opacity: 0;
+  }
+}
+
+.sync-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #9fe870;
+  border-radius: 50%;
+  top: -3.5px;
+  box-shadow: 0 0 10px rgba(159, 232, 112, 0.6);
+  animation: syncFlow 3s ease-in-out infinite;
+}
+
+.sync-dot:nth-child(2) {
+  animation-delay: 0s;
+}
+
+.sync-dot:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.sync-dot:nth-child(4) {
+  animation-delay: 2s;
+}
+
+/* Zoom Animation - Pulsing Circle */
+.zoom-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: linear-gradient(135deg, #f0f7ff 0%, #d9ebff 100%);
+  border-radius: 16px;
+  min-height: 120px;
+}
+
+.zoom-pulse {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-pulse::before,
+.zoom-pulse::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #9fe870;
+  opacity: 0;
+  animation: zoomPulse 2s ease-out infinite;
+}
+
+.zoom-pulse::after {
+  animation-delay: 1s;
+}
+
+@keyframes zoomPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* E-kutubxona Animation - Book Pages */
+.library-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: linear-gradient(135deg, #fffbf0 0%, #fff4d9 100%);
+  border-radius: 16px;
+  min-height: 120px;
+}
+
+.book-pages {
+  position: relative;
+  width: 80px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page {
+  position: absolute;
+  width: 40px;
+  height: 60px;
+  background: #9fe870;
+  border-radius: 2px;
+  transform-origin: left center;
+  opacity: 0.8;
+}
+
+.page:nth-child(1) {
+  left: 0;
+  animation: flipPage 3s ease-in-out infinite;
+}
+
+.page:nth-child(2) {
+  left: 0;
+  animation: flipPage 3s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.page:nth-child(3) {
+  left: 0;
+  animation: flipPage 3s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+@keyframes flipPage {
+  0%, 30% {
+    transform: rotateY(0deg);
+    z-index: 3;
+  }
+  50% {
+    transform: rotateY(-180deg);
+    z-index: 1;
+  }
+  100% {
+    transform: rotateY(-180deg);
+    z-index: 1;
+  }
+}
+
+/* To'lovlar Animation - Payment Progress */
+.payment-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: linear-gradient(135deg, #f0fff4 0%, #d9f7e8 100%);
+  border-radius: 16px;
+  min-height: 120px;
+}
+
+.payment-progress {
+  position: relative;
+  width: 200px;
+  height: 8px;
+  background: rgba(159, 232, 112, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.payment-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #9fe870;
+  border-radius: 4px;
+  animation: paymentFlow 2s ease-in-out infinite;
+}
+
+@keyframes paymentFlow {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 100%;
+  }
+  100% {
+    width: 100%;
+    opacity: 0;
+  }
+}
+
+.payment-checkmark {
+  position: absolute;
+  right: -30px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #9fe870;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: showCheck 2s ease-in-out infinite;
+}
+
+@keyframes showCheck {
+  0%, 45% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  95% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}

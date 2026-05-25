@@ -361,3 +361,71 @@
     transform: scale(0);
   }
 }
+
+/* ─────────── LAYOUT FIXES ─────────── */
+/* Hero stage uchun */
+.hero__stage {
+  padding-bottom: 0;
+}
+
+.hero__shot {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 55dvh;          /* viewport balandligining yarmidan ko'p emas */
+  height: auto;
+  object-fit: contain;
+}
+
+/* ─────────── RESPONSIVE FIXES ─────────── */
+@media (max-width: 768px) {
+  .hero__title {
+    font-size: 36px !important;
+  }
+
+  .hero__sub {
+    font-size: 16px;
+  }
+
+  .container {
+    padding: 0 16px !important;
+  }
+
+  .section {
+    padding: 60px 0 !important;
+  }
+
+  .section__title {
+    font-size: 28px !important;
+  }
+
+  .nav__links {
+    display: none !important;
+  }
+
+  .hero__ctas {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero__ctas .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .course-stack {
+    height: 400px;
+  }
+
+  .vendors {
+    grid-template-columns: 1fr !important;
+  }
+
+  .mobile__layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .mobile__img {
+    max-width: 100%;
+  }
+}

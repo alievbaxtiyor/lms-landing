@@ -17,7 +17,14 @@
       "Bash(npm create vite@latest lms-vue -- --template vue)",
       "Bash(npm install)",
       "Bash(xcopy /E /I /Y images lms-vuepublicimages)",
-      "Bash(npm run dev)"
+      "Bash(npm run dev)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nMigrate landing page from HTML to Vue 3 + Vite\n\nMajor changes:\n- Convert static HTML to Vue 3 component-based architecture\n- Split into 11 reusable components (NavBar, Hero, etc.)\n- Add Vite for modern build tooling and HMR\n- Implement scroll animations using Intersection Observer\n- Preserve all original design, styling, and animations\n- Add Netlify deployment configuration\n- Backup original HTML version to old-html-version/\n\nTech stack:\n- Vue 3 (Composition API)\n- Vite 8\n- Custom CSS with animations\n- Intersection Observer API\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(pkill -9 node)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(rm -rf lms-vue)",
+      "Bash(dir \"c:\\Users\\aliev\\Desktop\\work\\lms-landing-new\\public\\images\\logos\" /b)",
+      "Bash(findstr /i \"ipak\")"
     ],
     "deny": [],
     "ask": []

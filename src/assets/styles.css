@@ -408,10 +408,10 @@ img, svg { display: block; max-width: 100%; }
 
 /* ─────────── AI ─────────── */
 .ai__grid {
-  display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: auto auto; gap: 20px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  align-items: stretch;
 }
 .ai__feature {
-  grid-row: span 2;
   border: 1px solid var(--line); border-radius: 14px; background: #fff;
   padding: 28px; display: flex; flex-direction: column; gap: 24px;
 }
@@ -425,6 +425,24 @@ img, svg { display: block; max-width: 100%; }
   margin: 14px 0 12px; max-width: 560px;
 }
 .ai__feature-head p { font-size: 15px; color: var(--ink-3); margin: 0; max-width: 560px; }
+
+.feature__media {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  min-height: 0;
+}
+.feature__media img {
+  width: 100%;
+  max-height: 350px;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+  border: none;
+  object-fit: contain;
+  object-position: bottom;
+}
 
 .chat {
   margin-top: auto;
@@ -711,23 +729,30 @@ img, svg { display: block; max-width: 100%; }
 
 /* ─────────── INTEGRATIONS ─────────── */
 .integrations__wall {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
 }
 .ig {
-  display: grid; grid-template-columns: 42px 1fr; align-items: start; gap: 14px;
-  border: 1px solid var(--line); border-radius: 10px; padding: 18px; background: #fff;
+  display: flex; flex-direction: column; gap: 0;
+  border: 1px solid var(--line); border-radius: 14px; padding: 20px; background: #fff;
+  overflow: hidden;
 }
-.ig--lg { grid-column: span 1; padding: 28px; align-items: end; }
-.ig--lg .ig__mk { width: 56px; height: 56px; font-size: 16px; }
-.ig--lg b { font-size: 22px; font-weight: 500; }
-.ig__mk {
-  width: 42px; height: 42px; border-radius: 8px;
-  background: var(--bg-tint); border: 1px solid var(--line); color: var(--ink);
-  font-family: var(--f-mono); font-size: 13px; font-weight: 600;
-  display: grid; place-items: center;
+.ig--lg { grid-column: span 1; }
+.ig__caption {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-.ig b { display: block; font-size: 14px; font-weight: 500; margin-bottom: 2px; }
-.ig span { font-size: 12.5px; color: var(--ink-3); }
+.ig__caption b {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0a0a0a;
+}
+.ig__caption span {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #7a7872;
+}
 
 /* ─────────── MOBILE ─────────── */
 .mobile__layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
@@ -739,12 +764,17 @@ img, svg { display: block; max-width: 100%; }
 .mobile__bullets li:last-child { border-bottom: 1px solid #9fe870; }
 .mobile__bullets b { font-size: 15px; font-weight: 500; display: block; margin-bottom: 4px; }
 .mobile__bullets span { font-size: 13.5px; color: var(--ink-3); }
-.mobile__stores { display: flex; align-items: center; gap: 14px; font-size: 13px; color: var(--ink-2); }
+.mobile__stores { display: flex; align-items: center; gap: 18px; font-size: 17px; color: var(--ink-2); }
 .store {
-  display: inline-flex; align-items: center; gap: 8px;
-  border: 1px solid var(--line); padding: 8px 14px; border-radius: 8px; background: #fff;
+  display: inline-flex; align-items: center; gap: 12px;
+  border: 1px solid var(--line); padding: 16px 28px; border-radius: 12px; background: #fff;
   text-decoration: none; color: var(--ink-2);
   transition: all 0.2s ease;
+  font-weight: 500;
+}
+.store svg {
+  width: 28px;
+  height: 28px;
 }
 .store:hover {
   border-color: #9fe870;
@@ -890,7 +920,26 @@ img, svg { display: block; max-width: 100%; }
 
 /* ─────────── IMAGE FRAMES ─────────── */
 /* image stacks */
-.course-stack { display: flex; flex-direction: column; gap: 24px; }
+.course-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow: hidden;
+  border-radius: 14px;
+}
+.course-stack-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: verticalScroll 30s linear infinite;
+}
+.course-stack:hover .course-stack-inner {
+  animation-play-state: paused;
+}
+@keyframes verticalScroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
 .exam-shot {
   border-radius: 14px; overflow: hidden;
   box-shadow:
@@ -909,6 +958,11 @@ img, svg { display: block; max-width: 100%; }
 }
 .shot--plain { box-shadow: 0 6px 20px -10px rgba(15,15,25,.18); }
 .shot--bare { border: 0; background: transparent; box-shadow: none; border-radius: 0; }
+.analytics .shot,
+.platform .shot {
+  box-shadow: none;
+  border: none;
+}
 .imgcaption {
   font-family: var(--f-mono); font-size: 11px; color: var(--ink-4);
   margin-top: 10px; letter-spacing: .02em;
@@ -920,8 +974,19 @@ img, svg { display: block; max-width: 100%; }
 }
 
 .mobile__img {
-  width: 100%; max-width: 480px; display: block; margin: 0 auto;
-  filter: drop-shadow(0 30px 40px rgba(15,15,25,.18)) drop-shadow(0 8px 16px rgba(15,15,25,.08));
+  width: auto;
+  max-width: 280px;
+  height: auto;
+  max-height: 580px;
+  display: block;
+  border-radius: 32px;
+  box-shadow: 0 30px 60px -30px rgba(0,0,0,.3), 0 60px 100px -40px rgba(0,0,0,.25);
+}
+.mobile__img--1 {
+  transform: rotate(-6deg) translateY(20px);
+}
+.mobile__img--2 {
+  transform: rotate(6deg) translateY(-20px);
 }
 
 .schedule-strip { margin-top: 28px; }
@@ -939,6 +1004,25 @@ img, svg { display: block; max-width: 100%; }
   background: var(--bg-tint);
 }
 .ai__side .side__media img { width: 100%; display: block; }
+
+/* ─────────── AI CONTENT ─────────── */
+.ai-content__grid {
+  display: grid; gap: 20px;
+}
+.ai-content__feature {
+  border: 1px solid var(--line); border-radius: 14px; background: #fff;
+  padding: 28px; display: flex; flex-direction: column; gap: 24px;
+}
+.ai-content__feature-head .tag {
+  display: inline-block; font-family: var(--f-mono); font-size: 11px;
+  color: var(--accent); background: var(--accent-soft);
+  padding: 3px 8px; border-radius: 5px;
+}
+.ai-content__feature-head h3 {
+  font-size: 28px; font-weight: 500; letter-spacing: -.02em; line-height: 1.15;
+  margin: 14px 0 12px; max-width: 100%;
+}
+.ai-content__feature-head p { font-size: 15px; color: var(--ink-3); margin: 0; max-width: 100%; }
 
 /* ─────────── MEDIA ─────────── */
 @media (max-width: 1024px) {

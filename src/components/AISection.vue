@@ -18,20 +18,15 @@
           </div>
         </article>
 
-        <article class="ai__side">
-          <div class="ai__side-head">
-            <h4>AI plagiat aniqlash</h4>
+        <article class="ai__feature">
+          <div class="ai__feature-head">
+            <span class="tag">Nexta AI · Plagiat tekshirish</span>
+            <h3>Akademik halollikni ta'minlovchi AI plagiat aniqlash tizimi.</h3>
+            <p>Tillararo semantik o'xshashlik orqali tarjima qilingan, qayta yozilgan va parafraz qilingan ishlarni ham aniqlaydi. Akademik manbalardan tortib internet resurslarigacha keng qamrovli tekshirish amalga oshiriladi va aniq manba ko'rsatiladi.</p>
           </div>
-          <p>Tillararo semantik o'xshashlik tarjima qilingan va qayta yozilgan ishlarni ham aniqlaydi, manbagacha izlanadi.</p>
-          <div class="side__media"><img src="/images/plagiarism.png" alt="AI plagiat aniqlash interfeysi" /></div>
-        </article>
-
-        <article class="ai__side">
-          <div class="ai__side-head">
-            <h4>AI kontent yaratish</h4>
+          <div class="feature__media">
+            <img src="/images/plagiarism.png" alt="AI plagiat aniqlash interfeysi" />
           </div>
-          <p>Darslar, testlar, rubrikalar va tiklash kontentini o'z materiallaringizdan yarating — ochiq internetdan emas.</p>
-          <div class="side__media"><img src="/images/ai-content.png" alt="AI kontent yaratish interfeysi" /></div>
         </article>
       </div>
     </div>

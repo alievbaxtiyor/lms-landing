@@ -68,8 +68,8 @@ export function useScrollAnimation() {
       observer.observe(el)
     })
 
-    // Animate university logos
-    document.querySelectorAll('.unilogo').forEach((el) => {
+    // Animate university logos (but not in carousel)
+    document.querySelectorAll('.trust__logos .unilogo').forEach((el) => {
       el.classList.add('scale-in')
       observer.observe(el)
     })

@@ -21,6 +21,13 @@
              HEMIS ⇌ LMS · labeled packet pipeline (full-width)
              ============================================================ -->
         <div class="ig ig--lg ig--hemis">
+          <div class="ig__mk">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 7h16M4 12h16M4 17h16" />
+              <rect x="2" y="3" width="20" height="18" rx="2" />
+            </svg>
+          </div>
+
           <div class="hl-stage">
             <div class="hl-endpoints">
               <!-- HEMIS endpoint -->
@@ -96,6 +103,12 @@
              Zoom
              ============================================================ -->
         <div class="ig">
+          <div class="ig__mk">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15.5 1h-7l-1 2-3.5 1v7l3.5 1 1 2h7l1-2 3.5-1V4l-3.5-1-1-2z" />
+              <circle cx="12" cy="9" r="3" />
+            </svg>
+          </div>
           <div class="zoom-mini">
             <div class="zoom-mini__pulse">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
@@ -116,7 +129,13 @@
         <!-- ============================================================
              ANTIPLAG.UZ — YANGI
              ============================================================ -->
-        <a class="ig ig-link" href="https://antiplag.uz/" target="_blank" rel="noopener noreferrer">
+        <div class="ig">
+          <div class="ig__mk">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4" />
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+            </svg>
+          </div>
           <div class="ap-visual">
             <div class="ap-doc">
               <div class="ap-doc__h"></div>
@@ -143,12 +162,18 @@
               yuboriladi, hisobot bir necha soniyada qaytadi.
             </span>
           </div>
-        </a>
+        </div>
 
         <!-- ============================================================
              E-kutubxona
              ============================================================ -->
         <div class="ig">
+          <div class="ig__mk">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+          </div>
           <div class="lib-mini">
             <div class="lib-mini__stack">
               <div class="lib-mini__bk"></div>
@@ -170,6 +195,12 @@
              To'lovlar
              ============================================================ -->
         <div class="ig">
+          <div class="ig__mk">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="4" width="22" height="16" rx="2" />
+              <line x1="1" y1="10" x2="23" y2="10" />
+            </svg>
+          </div>
           <div class="pay-mini">
             <div class="pay-mini__row">
               <span class="pay-mini__card pay-mini__card--cl">CLICK</span>
@@ -212,18 +243,17 @@ const packetsLeft = [
 .ig--hemis {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 24px;
+  gap: 18px;
 }
 
 /* ====== Stage ====== */
 .hl-stage {
   position: relative;
   background: linear-gradient(135deg, #f8fdf5 0%, #e8f7db 100%);
-  border-radius: 12px;
-  padding: 32px;
+  border-radius: 14px;
+  padding: 28px;
   overflow: hidden;
-  min-height: 280px;
+  min-height: 240px;
 }
 .hl-endpoints {
   display: grid;
@@ -386,33 +416,29 @@ const packetsLeft = [
 }
 
 /* ====== Caption override ====== */
-.ig--hemis .ig__caption {
-  padding: 0;
-}
 .ig--hemis .ig__caption b {
   font-size: 20px;
   font-weight: 600;
-  margin-bottom: 0;
+  margin-bottom: 6px;
   display: block;
   color: #0a0a0a;
 }
 .ig--hemis .ig__caption span {
-  font-size: 15px;
+  font-size: 14px;
   color: #7a7872;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 /* ============================================================
    ANTIPLAG.UZ visual
    ============================================================ */
 .ap-visual {
-  height: 160px;
+  height: 140px;
   position: relative;
   display: grid;
   place-items: center;
   overflow: hidden;
-  margin: 0;
-  background: #fafafa;
+  margin-top: 12px;
 }
 .ap-doc {
   position: relative;
@@ -511,12 +537,11 @@ const packetsLeft = [
    Other secondary visuals (Zoom, library, payments)
    ============================================================ */
 .zoom-mini {
-  height: 160px;
+  height: 120px;
   display: grid;
   place-items: center;
   position: relative;
-  margin: 0;
-  background: #fafafa;
+  margin-top: 12px;
 }
 .zoom-mini__pulse {
   width: 64px;
@@ -543,19 +568,18 @@ const packetsLeft = [
 }
 
 .lib-mini {
-  height: 160px;
+  height: 120px;
   display: grid;
   place-items: center;
   position: relative;
-  margin: 0;
-  background: #fafafa;
+  margin-top: 12px;
 }
 .lib-mini__stack {
   display: flex;
 }
 .lib-mini__bk {
-  width: 32px;
-  height: 90px;
+  width: 28px;
+  height: 80px;
   border-radius: 3px 6px 6px 3px;
   margin-left: -2px;
   border: 1px solid #e7e5e4;
@@ -566,12 +590,11 @@ const packetsLeft = [
 .lib-mini__bk:nth-child(4) { background: #d9f99d; }
 
 .pay-mini {
-  height: 160px;
+  height: 120px;
   display: grid;
   place-items: center;
   position: relative;
-  margin: 0;
-  background: #fafafa;
+  margin-top: 12px;
 }
 .pay-mini__row {
   display: flex;
@@ -603,17 +626,6 @@ const packetsLeft = [
 }
 .ig--hemis {
   grid-column: span 2;
-}
-
-/* Link styling */
-.ig-link {
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.ig-link:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* ============================================================

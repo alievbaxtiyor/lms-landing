@@ -24,7 +24,15 @@
       "Bash(taskkill /F /IM node.exe)",
       "Bash(rm -rf lms-vue)",
       "Bash(dir \"c:\\Users\\aliev\\Desktop\\work\\lms-landing-new\\public\\images\\logos\" /b)",
-      "Bash(findstr /i \"ipak\")"
+      "Bash(findstr /i \"ipak\")",
+      "Bash(test -f public/images/logos/AIFU.png)",
+      "Bash(npm run build)",
+      "Bash(git mv public/images/logos/aifu.png public/images/logos/AIFU.png)",
+      "Bash(git add src/components/UniversityCarousel.vue)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nUpdate university carousel: fix logos and styling\n\nChanges:\n- Fix logo case sensitivity: rename aifu.png → AIFU.png for Linux/Netlify\n- Fix logo file extensions: OXU.jpg → OXU.png, AUNIVER.jpg → AUNIVER.png, SILKROAD.jpg → SILKROAD.png\n- Change TIME logo color to white/inverted for better visibility on green background\n- Increase logo sizes: 56px → 100px height, 80px → 150px width\n- Increase text size: 14px → 18px with font-weight 600\n- Change \"RENESANS TA'LIM UNIVERSITETI\"\" to normal case: \"\"Renesans ta'lim universiteti\"\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nUpdate university carousel styling and fix logo references\n\n- Increase logo sizes to 100px×150px (was 56px×80px)\n- Increase text size to 18px with bold weight (was 14px)\n- Fix TIME logo to use inverted colors for visibility\n- Fix SILKROAD, OXU, AUNIVER file extensions (.png not .jpg)\n- Normalize \"RENESANS TA 'LIM UNIVERSITETI\" to sentence case\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(test -f .env.example)",
+      "Bash(git add -A)"
     ],
     "deny": [],
     "ask": []

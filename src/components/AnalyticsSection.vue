@@ -10,8 +10,18 @@
       </div>
 
       <div class="analytics__grid">
-        <div class="report">
-          <img class="shot" src="/images/course-log.png" alt="Talaba ko'rsatkichlari hisoboti" />
+        <div class="course-stack">
+          <div class="course-stack-inner">
+            <img class="shot" src="/images/dashboard.png" alt="LMS Dashboard" />
+            <img class="shot" src="/images/dashboard2.png" alt="LMS Dashboard 2" />
+            <img class="shot" src="/images/dashboard3.png" alt="LMS Dashboard 3" />
+            <img class="shot" src="/images/dashboard4.png" alt="LMS Dashboard 4" />
+            <!-- Duplicate for seamless loop -->
+            <img class="shot" src="/images/dashboard.png" alt="LMS Dashboard" />
+            <img class="shot" src="/images/dashboard2.png" alt="LMS Dashboard 2" />
+            <img class="shot" src="/images/dashboard3.png" alt="LMS Dashboard 3" />
+            <img class="shot" src="/images/dashboard4.png" alt="LMS Dashboard 4" />
+          </div>
         </div>
 
         <ul class="reports-list">

@@ -3,6 +3,7 @@ import NavBar from './components/NavBar.vue'
 import Hero from './components/Hero.vue'
 import UniversityCarousel from './components/UniversityCarousel.vue'
 import AISection from './components/AISection.vue'
+import AIContentSection from './components/AIContentSectionV2.vue'
 import PlatformSection from './components/PlatformSection.vue'
 import ProctoringSect from './components/ProctoringSection.vue'
 import AnalyticsSection from './components/AnalyticsSection.vue'
@@ -27,6 +28,7 @@ useScrollAnimation()
     </div>
 
     <AISection />
+    <AIContentSection />
     <PlatformSection />
     <ProctoringSect />
     <AnalyticsSection />

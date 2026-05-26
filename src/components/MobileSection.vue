@@ -35,7 +35,8 @@
         </div>
       </div>
       <div class="mobile__devices">
-        <img class="mobile__img" src="/images/mobile.png" alt="LMS.uz mobil ilova" />
+        <img class="mobile__img mobile__img--1" src="/images/mobile_photo1.jpg" alt="LMS.uz mobil ilova - ekran 1" />
+        <img class="mobile__img mobile__img--2" src="/images/mobile_photo2.jpg" alt="LMS.uz mobil ilova - ekran 2" />
       </div>
     </div>
   </section>

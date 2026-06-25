@@ -1,0 +1,22 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2027_337)">
+<circle cx="24" cy="24" r="18" fill="#5FC11F"/>
+<foreignObject x="-32" y="-32" width="112" height="112"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(16px);clip-path:url(#bgblur_1_2027_337_clip_path);height:100%;width:100%"></div></foreignObject><g data-figma-bg-blur-radius="32">
+<mask id="path-2-inside-1_2027_337" fill="white">
+<path d="M24 0C37.2548 0 48 10.7452 48 24C48 37.2548 37.2548 48 24 48C10.7452 48 0 37.2548 0 24C0 10.7452 10.7452 0 24 0ZM24 10C16.268 10 10 16.268 10 24C10 31.732 16.268 38 24 38C31.732 38 38 31.732 38 24C38 16.268 31.732 10 24 10Z"/>
+</mask>
+<path d="M24 0C37.2548 0 48 10.7452 48 24C48 37.2548 37.2548 48 24 48C10.7452 48 0 37.2548 0 24C0 10.7452 10.7452 0 24 0ZM24 10C16.268 10 10 16.268 10 24C10 31.732 16.268 38 24 38C31.732 38 38 31.732 38 24C38 16.268 31.732 10 24 10Z" fill="white" fill-opacity="0.64"/>
+<path d="M24 0V1C36.7025 1 47 11.2975 47 24H48H49C49 10.1929 37.8071 -1 24 -1V0ZM48 24H47C47 36.7025 36.7025 47 24 47V48V49C37.8071 49 49 37.8071 49 24H48ZM24 48V47C11.2975 47 1 36.7025 1 24H0H-1C-1 37.8071 10.1929 49 24 49V48ZM0 24H1C1 11.2975 11.2975 1 24 1V0V-1C10.1929 -1 -1 10.1929 -1 24H0ZM24 10V9C15.7157 9 9 15.7157 9 24H10H11C11 16.8203 16.8203 11 24 11V10ZM10 24H9C9 32.2843 15.7157 39 24 39V38V37C16.8203 37 11 31.1797 11 24H10ZM24 38V39C32.2843 39 39 32.2843 39 24H38H37C37 31.1797 31.1797 37 24 37V38ZM38 24H39C39 15.7157 32.2843 9 24 9V10V11C31.1797 11 37 16.8203 37 24H38Z" fill="url(#paint0_linear_2027_337)" mask="url(#path-2-inside-1_2027_337)"/>
+</g>
+</g>
+<defs>
+<clipPath id="bgblur_1_2027_337_clip_path" transform="translate(32 32)"><path d="M24 0C37.2548 0 48 10.7452 48 24C48 37.2548 37.2548 48 24 48C10.7452 48 0 37.2548 0 24C0 10.7452 10.7452 0 24 0ZM24 10C16.268 10 10 16.268 10 24C10 31.732 16.268 38 24 38C31.732 38 38 31.732 38 24C38 16.268 31.732 10 24 10Z"/>
+</clipPath><linearGradient id="paint0_linear_2027_337" x1="24" y1="0" x2="24" y2="48" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="white" stop-opacity="0"/>
+</linearGradient>
+<clipPath id="clip0_2027_337">
+<rect width="48" height="48" fill="white"/>
+</clipPath>
+</defs>
+</svg>

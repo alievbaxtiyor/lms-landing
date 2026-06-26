@@ -4,6 +4,7 @@ import Hero from './components/Hero.vue'
 import Features from './components/Features.vue'
 import Introduction from './components/Introduction.vue'
 import Integrations from './components/Integrations.vue'
+import WhyOurPlatform from './components/WhyOurPlatform.vue'
 </script>
 
 <template>
@@ -12,4 +13,5 @@ import Integrations from './components/Integrations.vue'
   <Features />
   <Introduction />
   <Integrations />
+  <WhyOurPlatform />
 </template>

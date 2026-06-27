@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import PhysicsTags from './PhysicsTags.vue'
+import whyusBack from '../assets/images/whyusback.png'
+import whyusOn from '../assets/images/whyuson.png'
+import stepSecure from '../assets/images/step-secure.png'
 // Row icons as raw markup so they can be recolored via currentColor.
 import starIcon from '../assets/icons/star.svg?raw'
 import opportunityIcon from '../assets/icons/opportunity.svg?raw'
@@ -155,10 +158,42 @@ const items: Item[] = [
 
 const active = ref(0)
 const current = computed(() => items[active.value])
+
+// Security-expertise steps (second big card). Each step's badge gets a
+// progressively darker green.
+const securitySteps = [
+  {
+    num: 1,
+    color: '#71DD2B',
+    title: "Axborot yig‘ish va tizimni tahlil qilish",
+    desc: "Platforma arxitekturasi, ma'lumotlar oqimi va xavf yuzasi tahlil qilindi",
+  },
+  {
+    num: 2,
+    color: '#5FC11F',
+    title: "Texnik vazifa va me'yoriy talablarga moslikni tekshirish",
+    desc: "Tizim standartlar va texnik talablar asosida tekshirildi",
+  },
+  {
+    num: 3,
+    color: '#4E9F1A',
+    title: "Zaifliklarni aniqlash va ekspertiza xulosasi",
+    desc: "Zaifliklar aniqlandi, bartaraf etildi va ekspertiza xulosasi berildi",
+  },
+]
+
+// Stat cards inside the big green card.
+const stats = [
+  { value: '40K+', label: 'Talabalar soni', wide: false },
+  { value: '14K+', label: 'Video kontent soni', wide: false },
+  { value: '650K+', label: 'Otkazilgan imtihonlar soni', wide: true },
+  { value: '115+', label: 'Xizmatlar soni', wide: false },
+  { value: '3K', label: 'Profesional kurslar', wide: false },
+]
 </script>
 
 <template>
-  <section class="bg-white text-[#0B0E04]">
+  <section class="text-[#0B0E04]">
     <div class="mx-auto max-w-330 px-8 py-20">
       <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
         Nima uchun bizning platforma?
@@ -203,9 +238,10 @@ const current = computed(() => items[active.value])
           </button>
         </div>
 
-        <!-- Right: info card — taller (360px) so the tag physics has room to settle cleanly -->
+        <!-- Right: info card — 294px to fit content; taller only for the tag physics -->
         <div
-          class="flex w-full shrink-0 flex-col gap-6 rounded-3xl border border-[#F4F4F4] bg-[#F4F4F4] p-8 lg:h-90 lg:w-138 lg:overflow-hidden"
+          class="flex w-full shrink-0 flex-col gap-6 rounded-3xl border border-[#F4F4F4] bg-[#F4F4F4] p-8 lg:w-138 lg:overflow-hidden"
+          :class="current.tags ? 'lg:h-90' : 'lg:h-73.5'"
         >
           <div class="shrink-0">
             <h3 class="font-sf text-[24px] font-semibold leading-8 tracking-[0.02em] text-[#0B0E04]">
@@ -310,8 +346,90 @@ const current = computed(() => items[active.value])
         </div>
       </div>
 
-      <!-- Big card (empty — to be filled later) -->
-      <div class="mt-8 h-138 w-full max-w-280 rounded-3xl bg-[#9FE870]"></div>
+      <!-- Big card -->
+      <div class="relative mt-8 h-138 w-full max-w-280 overflow-hidden rounded-3xl bg-[#9FE870]">
+        <!-- green frame around the back dashboard -->
+        <div
+          class="absolute rounded-[18px] border-2 border-[#71DD2B]"
+          style="top: 32px; left: 104px; width: 616px; height: 454px"
+        ></div>
+        <!-- back dashboard -->
+        <img
+          :src="whyusBack"
+          alt=""
+          class="absolute rounded-xl shadow-lg"
+          style="top: 40px; left: 112px; width: 600px; height: 438px"
+        />
+        <!-- green frame around the front dashboard -->
+        <div
+          class="absolute rounded-[18px] border-2 border-[#71DD2B]"
+          style="top: 169px; left: -45px; width: 616px; height: 454px"
+        ></div>
+        <!-- front dashboard (overlaps, bleeds off the left edge) -->
+        <img
+          :src="whyusOn"
+          alt=""
+          class="absolute rounded-xl shadow-2xl"
+          style="top: 177px; left: -37px; width: 600px; height: 428px"
+        />
+
+        <!-- stat cards -->
+        <div class="absolute grid grid-cols-2 gap-1" style="top: 32px; left: 752px; width: 336px">
+          <div
+            v-for="(s, i) in stats"
+            :key="i"
+            class="flex h-36 flex-col justify-center gap-2 rounded-2xl bg-[#E7F9DBB2] p-4"
+            :class="{ 'col-span-2': s.wide }"
+          >
+            <span class="font-sf text-[48px] font-medium leading-14 tracking-[0.01em] text-[#0B0E04]">
+              {{ s.value }}
+            </span>
+            <span class="font-sf text-[16px] font-normal leading-5.5 tracking-[0.02em] text-[#3D7D14]">
+              {{ s.label }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security expertise card -->
+      <div
+        class="relative mt-8 h-119 w-full max-w-280 overflow-hidden rounded-3xl bg-cover bg-center"
+        :style="{ backgroundImage: `url(${stepSecure})` }"
+      >
+        <div class="absolute top-14 left-14 w-147.75 max-w-[calc(100%-7rem)]">
+          <h3
+            class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]"
+          >
+            3 bosqichli xavfsizlik<br />
+            ekspertizasidan o'tgan
+          </h3>
+
+          <div class="mt-6 space-y-3">
+            <div
+              v-for="step in securitySteps"
+              :key="step.num"
+              class="flex h-17 items-center gap-4 rounded-2xl bg-[#FFFFFFA3] p-3"
+            >
+              <span
+                class="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-full border border-white/70 font-sf text-[16px] font-semibold text-white"
+                :style="{ backgroundColor: step.color }"
+              >
+                {{ step.num }}
+              </span>
+              <p
+                class="w-60.25 shrink-0 font-sf text-[16px] font-semibold leading-5.5 tracking-[0.02em] text-[#0B0E04]"
+              >
+                {{ step.title }}
+              </p>
+              <p
+                class="w-64 font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#4A4A4A]"
+              >
+                {{ step.desc }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>

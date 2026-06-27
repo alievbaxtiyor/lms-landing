@@ -6,7 +6,7 @@
 </script>
 
 <template>
-  <section class="bg-white text-[#0B0E04]">
+  <section class="text-[#0B0E04]">
     <div class="mx-auto max-w-330 px-8 py-20">
       <!-- Header -->
       <div class="max-w-185.25">

@@ -1,19 +1,22 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import logoMark from '../assets/logos/logo.svg'
 import logoWordmark from '../assets/logos/lms.uz.svg'
 import translateIcon from '../assets/icons/language.svg'
 
 interface NavLink {
   label: string
-  href: string
+  to: string
 }
 
+// Hash targets resolve to the matching section id on the home page (and work
+// from other routes too — the router navigates home then scrolls to it).
 const links: NavLink[] = [
-  { label: 'Imkoniyatlar', href: '#imkoniyatlar' },
-  { label: 'Integratsiyalar', href: '#integratsiyalar' },
-  { label: 'Natijalar', href: '#natijalar' },
-  { label: 'FAQ', href: '#faq' },
+  { label: 'Imkoniyatlar', to: '/#imkoniyatlar' },
+  { label: 'Integratsiyalar', to: '/#integratsiyalar' },
+  { label: 'Natijalar', to: '/#natijalar' },
+  { label: 'FAQ', to: '/#faq' },
 ]
 
 const languages = ["O'zb", 'Рус', 'Eng'] as const
@@ -32,23 +35,23 @@ function selectLang(lang: Language) {
 </script>
 
 <template>
-  <header class="bg-[#0c0f0b] text-white">
-    <nav class="mx-auto flex max-w-330 items-center justify-between px-8 py-5">
+  <header class="bg-black text-white">
+    <nav class="mx-auto flex max-w-296 items-center justify-between px-8 py-5">
       <!-- Left: logo + links -->
       <div class="flex items-center gap-10">
-        <a href="#home" class="flex items-center gap-2">
+        <RouterLink to="/" class="flex items-center gap-2">
           <img :src="logoMark" alt="" class="h-5.5 w-auto" />
           <img :src="logoWordmark" alt="lms.uz" class="h-4.25 w-auto" />
-        </a>
+        </RouterLink>
 
         <ul class="hidden items-center gap-8 md:flex">
-          <li v-for="link in links" :key="link.href">
-            <a
-              :href="link.href"
+          <li v-for="link in links" :key="link.to">
+            <RouterLink
+              :to="link.to"
               class="font-sf text-[16px] font-normal leading-5.5 tracking-[0.02em] text-[#E8E8E8] transition-colors hover:text-white"
             >
               {{ link.label }}
-            </a>
+            </RouterLink>
           </li>
         </ul>
       </div>
@@ -113,14 +116,14 @@ function selectLang(lang: Language) {
     <!-- Mobile menu -->
     <div v-if="isOpen" class="border-t border-white/10 md:hidden">
       <ul class="space-y-1 px-6 py-4">
-        <li v-for="link in links" :key="link.href">
-          <a
-            :href="link.href"
+        <li v-for="link in links" :key="link.to">
+          <RouterLink
+            :to="link.to"
             class="block rounded-md px-3 py-2 font-sf text-[16px] font-normal leading-5.5 tracking-[0.02em] text-[#E8E8E8] hover:bg-white/5 hover:text-white"
             @click="isOpen = false"
           >
             {{ link.label }}
-          </a>
+          </RouterLink>
         </li>
         <li class="flex items-center justify-between gap-4 px-3 pt-4">
           <div class="flex gap-3">

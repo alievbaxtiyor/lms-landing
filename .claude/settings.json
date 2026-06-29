@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm install vue-router@4 2>&1)"
+    ]
+  }
+}

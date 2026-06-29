@@ -37,8 +37,8 @@ function toggle(i: number) {
 </script>
 
 <template>
-  <section class="text-[#0B0E04]">
-    <div class="mx-auto max-w-330 px-8 py-20">
+  <section id="faq" class="text-[#0B0E04]">
+    <div class="mx-auto max-w-296 px-8 py-20">
       <div class="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
         <!-- Title -->
         <h2

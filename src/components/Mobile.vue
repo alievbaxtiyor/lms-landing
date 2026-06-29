@@ -14,7 +14,7 @@ const badge = 'rounded-full bg-[#FFFFFFA3] shadow-[0_6px_24px_rgba(0,0,0,0.10)] 
 
 <template>
   <section class="overflow-x-clip text-[#0B0E04]">
-    <div class="mx-auto max-w-330 px-8 py-20">
+    <div class="mx-auto max-w-296 px-8 py-20">
       <div class="flex flex-col gap-12 lg:flex-row lg:gap-8">
         <!-- Left column -->
         <div class="w-full shrink-0 lg:max-w-138">

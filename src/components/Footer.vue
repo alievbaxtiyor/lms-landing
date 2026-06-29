@@ -36,14 +36,27 @@ const socials = [
 </script>
 
 <template>
-  <footer class="relative overflow-hidden bg-[#0B0E04] text-white">
+  <footer class="relative z-10 bg-[#0B0E04] text-white lg:-mt-28">
+    <!-- Curved "moon" top edge: a black cap that arcs up into the green section
+         above, leaving green visible above the curve. -->
+    <div class="pointer-events-none absolute inset-x-0 bottom-full -mb-px">
+      <svg
+        class="block h-18 w-full"
+        viewBox="0 0 1440 72"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path d="M0,72 L0,30 Q720,-8 1440,30 L1440,72 Z" fill="#0B0E04" />
+      </svg>
+    </div>
+
     <!-- Green glow at the bottom -->
     <div
       class="pointer-events-none absolute inset-x-0 bottom-0 h-[60%]"
       style="background: radial-gradient(80% 100% at 50% 100%, rgba(159, 232, 112, 0.22) 0%, rgba(159, 232, 112, 0) 70%)"
     ></div>
 
-    <div class="relative mx-auto max-w-330 px-8 py-20">
+    <div class="relative mx-auto max-w-296 px-8 py-20">
       <!-- CTA -->
       <div class="flex flex-col items-center text-center">
         <h2
@@ -83,7 +96,7 @@ const socials = [
         class="mt-20 flex flex-col gap-12 border-b border-white/10 pb-9 lg:flex-row lg:justify-between lg:gap-4"
       >
         <!-- Logo + tagline -->
-        <div class="max-w-65">
+        <div class="max-w-114.25">
           <a href="#home" class="flex items-center gap-2">
             <img :src="logoMark" alt="" class="h-5.5 w-auto" />
             <img :src="logoWordmark" alt="lms.uz" class="h-4.25 w-auto" />
@@ -91,14 +104,15 @@ const socials = [
           <p
             class="mt-4 font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#A4A4A4]"
           >
-            Zamonaviy ta'lim muassasalari uchun kompleks LMS platformasi
+            Zamonaviy ta'lim muassasalari<br />
+            uchun kompleks LMS platformasi
           </p>
         </div>
 
         <!-- Columns -->
         <div class="flex flex-wrap gap-x-16 gap-y-10">
           <!-- Platforma -->
-          <nav class="flex flex-col gap-4">
+          <nav class="flex w-51.25 flex-col gap-6">
             <p class="font-sf text-[14px] font-medium leading-4.5 tracking-[0.02em] text-[#E8E8E8]">
               Platforma
             </p>
@@ -113,7 +127,7 @@ const socials = [
           </nav>
 
           <!-- Imkoniyatlar -->
-          <nav class="flex flex-col gap-4">
+          <nav class="flex w-51.25 flex-col gap-6">
             <p class="font-sf text-[14px] font-medium leading-4.5 tracking-[0.02em] text-[#E8E8E8]">
               Imkoniyatlar
             </p>
@@ -128,7 +142,7 @@ const socials = [
           </nav>
 
           <!-- Bog'lanish -->
-          <div class="flex flex-col gap-4">
+          <div class="flex w-51.25 flex-col gap-6">
             <p class="font-sf text-[14px] font-medium leading-4.5 tracking-[0.02em] text-[#E8E8E8]">
               Bog'lanish
             </p>
@@ -146,7 +160,7 @@ const socials = [
             </a>
 
             <!-- Social icons -->
-            <div class="mt-1 flex items-center gap-4">
+            <div class="flex items-center gap-4">
               <a
                 v-for="social in socials"
                 :key="social.label"

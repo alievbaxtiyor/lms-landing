@@ -48,8 +48,8 @@ function scroll(direction: number) {
 </script>
 
 <template>
-  <section class="text-[#0B0E04]">
-    <div class="mx-auto max-w-330 px-8 py-20">
+  <section id="natijalar" class="text-[#0B0E04]">
+    <div class="mx-auto max-w-296 px-8 py-20">
       <!-- Header: title + carousel buttons -->
       <div class="flex items-end justify-between gap-6">
         <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">

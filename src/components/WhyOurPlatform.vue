@@ -194,7 +194,7 @@ const stats = [
 
 <template>
   <section class="text-[#0B0E04]">
-    <div class="mx-auto max-w-330 px-8 py-20">
+    <div class="mx-auto max-w-296 px-8 py-20">
       <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
         Nima uchun bizning platforma?
       </h2>

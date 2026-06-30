@@ -1,35 +1,44 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
+import { setLocale, type Locale } from '../i18n'
 import logoMark from '../assets/logos/logo.svg'
 import logoWordmark from '../assets/logos/lms.uz.svg'
 import translateIcon from '../assets/icons/language.svg'
 
+const { t, locale } = useI18n()
+
 interface NavLink {
-  label: string
+  key: string
   to: string
 }
 
 // Hash targets resolve to the matching section id on the home page (and work
 // from other routes too — the router navigates home then scrolls to it).
 const links: NavLink[] = [
-  { label: 'Imkoniyatlar', to: '/#imkoniyatlar' },
-  { label: 'Integratsiyalar', to: '/#integratsiyalar' },
-  { label: 'Natijalar', to: '/#natijalar' },
-  { label: 'FAQ', to: '/#faq' },
+  { key: 'nav.features', to: '/#imkoniyatlar' },
+  { key: 'nav.integrations', to: '/#integratsiyalar' },
+  { key: 'nav.results', to: '/#natijalar' },
+  { key: 'nav.faq', to: '/#faq' },
 ]
 
-const languages = ["O'zb", 'Рус', 'Eng'] as const
-type Language = (typeof languages)[number]
+const languages: { code: Locale; label: string }[] = [
+  { code: 'uz', label: "O'zb" },
+  { code: 'ru', label: 'Рус' },
+  { code: 'en', label: 'Eng' },
+]
 
-const currentLang = ref<Language>("O'zb")
 const isLangOpen = ref(false)
 const isOpen = ref(false)
 
-const phone = '+998 77 013 78 04'
+const currentLangLabel = computed(
+  () => languages.find((l) => l.code === locale.value)?.label ?? "O'zb",
+)
+const phone = computed(() => t('common.phone'))
 
-function selectLang(lang: Language) {
-  currentLang.value = lang
+function selectLang(code: Locale) {
+  setLocale(code)
   isLangOpen.value = false
 }
 </script>
@@ -50,7 +59,7 @@ function selectLang(lang: Language) {
               :to="link.to"
               class="font-sf text-[16px] font-normal leading-5.5 tracking-[0.02em] text-[#E8E8E8] transition-colors hover:text-white"
             >
-              {{ link.label }}
+              {{ $t(link.key) }}
             </RouterLink>
           </li>
         </ul>
@@ -66,20 +75,20 @@ function selectLang(lang: Language) {
             @click="isLangOpen = !isLangOpen"
           >
             <img :src="translateIcon" alt="" class="h-5 w-5" />
-            {{ currentLang }}
+            {{ currentLangLabel }}
           </button>
           <ul
             v-if="isLangOpen"
             class="absolute right-0 z-10 mt-3 w-24 overflow-hidden rounded-lg border border-white/10 bg-zinc-900 py-1 shadow-lg"
           >
-            <li v-for="lang in languages" :key="lang">
+            <li v-for="lang in languages" :key="lang.code">
               <button
                 type="button"
                 class="block w-full px-4 py-2 text-left font-sf text-[16px] text-slate-300 hover:bg-white/5 hover:text-white"
-                :class="{ 'text-white': lang === currentLang }"
-                @click="selectLang(lang)"
+                :class="{ 'text-white': lang.code === locale }"
+                @click="selectLang(lang.code)"
               >
-                {{ lang }}
+                {{ lang.label }}
               </button>
             </li>
           </ul>
@@ -122,20 +131,20 @@ function selectLang(lang: Language) {
             class="block rounded-md px-3 py-2 font-sf text-[16px] font-normal leading-5.5 tracking-[0.02em] text-[#E8E8E8] hover:bg-white/5 hover:text-white"
             @click="isOpen = false"
           >
-            {{ link.label }}
+            {{ $t(link.key) }}
           </RouterLink>
         </li>
         <li class="flex items-center justify-between gap-4 px-3 pt-4">
           <div class="flex gap-3">
             <button
               v-for="lang in languages"
-              :key="lang"
+              :key="lang.code"
               type="button"
               class="text-sm font-medium text-slate-400 hover:text-white"
-              :class="{ 'text-white': lang === currentLang }"
-              @click="selectLang(lang)"
+              :class="{ 'text-white': lang.code === locale }"
+              @click="selectLang(lang.code)"
             >
-              {{ lang }}
+              {{ lang.label }}
             </button>
           </div>
           <a

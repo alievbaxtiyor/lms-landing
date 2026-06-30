@@ -1,72 +1,66 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import leftIcon from '../assets/icons/left.svg'
 import rightIcon from '../assets/icons/right.svg'
-import pauseIcon from '../assets/icons/pause.svg'
 import muteIcon from '../assets/icons/mute.svg'
 import expandIcon from '../assets/icons/expand.svg'
 import video1 from '../assets/videos/introdaction1.mp4'
 import video2 from '../assets/videos/introdaction2.mp4'
 
+const { t } = useI18n()
+
 const bg = 'radial-gradient(195.63% 106.74% at 50% -6.74%, #9FE870 0%, #FFFFFF 100%)'
 
+// Exactly two videos.
 const slides = [video1, video2]
-const N = slides.length
-
-// Infinite carousel: render 3 copies and live in the middle one, resetting
-// seamlessly at the edges so "next" can advance forever in either direction.
-const loopSlides = [...slides, ...slides, ...slides]
 const STEP = 741 + 24 // card width (w-185.25) + gap (gap-6)
-const pos = ref(N) // index into loopSlides currently in the main slot
-const animating = ref(true)
 
-// ----- Active video playback state -----
-const videoEl = ref<HTMLVideoElement | null>(null)
+const activeIndex = ref(0)
+
+// Each card keeps its own persistent <video> element.
+const videoEls = ref<(HTMLVideoElement | null)[]>([])
+function setVideoRef(idx: number, el: any) {
+  videoEls.value[idx] = (el as HTMLVideoElement) ?? null
+}
+const videoEl = computed(() => videoEls.value[activeIndex.value] ?? null)
+
 const isPlaying = ref(false)
 const isMuted = ref(false)
 const progress = ref(0)
 
-// Becomes true after the first navigation so the new main video auto-plays.
-const autoplay = ref(false)
-
-// Function ref: the controlled <video> lives inside v-for, so a string ref
-// would collect into an array. This keeps videoEl pointing at the active video.
-const setVideoEl = (el: any) => {
-  videoEl.value = (el as HTMLVideoElement) ?? null
-}
-
-// Whenever the active video element changes (slide or seamless reset), play it.
-watch(
-  videoEl,
-  (v) => {
-    if (v && autoplay.value) v.play().catch(() => {})
-  },
-  { flush: 'post' },
+const playPauseLabel = computed(() =>
+  isPlaying.value ? t('introduction.pause') : t('introduction.play'),
 )
 
-const offset = computed(() => pos.value * STEP)
-
-function move(dir: number) {
-  if (!animating.value) return
-  pos.value += dir
-  autoplay.value = true
-  progress.value = 0
+// Seek a few seconds in so the paused player shows a real frame as its poster
+// instead of the dark intro. Playing videos are left alone.
+const POSTER_TIME = 3
+function showPoster(e: Event) {
+  const v = e.target as HTMLVideoElement
+  if (v.paused && v.currentTime < 0.1) {
+    try {
+      v.currentTime = Math.min(POSTER_TIME, (v.duration || POSTER_TIME) - 0.1)
+    } catch {
+      /* seeking can throw before data is ready — ignore */
+    }
+  }
 }
 
-function onTransitionEnd(e: TransitionEvent) {
-  if (e.propertyName !== 'transform') return
-  // Jumped past the middle copy → snap back by one set (visually identical).
-  if (pos.value >= 2 * N || pos.value < N) {
-    animating.value = false
-    pos.value = N + (((pos.value % N) + N) % N)
-    requestAnimationFrame(() => requestAnimationFrame(() => (animating.value = true)))
-  }
+function goTo(idx: number) {
+  if (idx === activeIndex.value) return
+  videoEl.value?.pause()
+  activeIndex.value = idx
+  progress.value = 0
+}
+function move(dir: number) {
+  goTo((activeIndex.value + dir + slides.length) % slides.length)
 }
 
 function togglePlay() {
   const v = videoEl.value
   if (!v) return
-  if (v.paused) v.play()
+  if (v.paused) v.play().catch(() => {})
   else v.pause()
 }
 function onTimeUpdate() {
@@ -97,21 +91,21 @@ function toggleFullscreen() {
       <div class="flex items-end justify-between gap-6">
         <div class="max-w-138">
           <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
-            Tizimimiz bilan<br />
-            2 daqiqada tanishing
+            {{ $t('introduction.titleLine1') }}<br />
+            {{ $t('introduction.titleLine2') }}
           </h2>
           <p
             class="mt-4 font-sf text-[16px] font-normal leading-5.5 tracking-[0.02em] text-[#333333]"
           >
-            Platforma qanday ishlashini, o'qituvchi va o'quvchi tajribasini<br />
-            qisqa videoda ko'ring.
+            {{ $t('introduction.descLine1') }}<br />
+            {{ $t('introduction.descLine2') }}
           </p>
         </div>
 
         <div class="flex h-12.5 w-24 shrink-0 items-center justify-center gap-1 rounded-full bg-[#E7F9DB] p-1">
           <button
             type="button"
-            aria-label="Oldingi"
+            :aria-label="$t('introduction.prev')"
             class="flex h-10.5 w-10.5 items-center justify-center rounded-full bg-[#9FE870] transition-colors hover:bg-[#8fdc60]"
             @click="move(-1)"
           >
@@ -119,7 +113,7 @@ function toggleFullscreen() {
           </button>
           <button
             type="button"
-            aria-label="Keyingi"
+            :aria-label="$t('introduction.next')"
             class="flex h-10.5 w-10.5 items-center justify-center rounded-full bg-[#9FE870] transition-colors hover:bg-[#8fdc60]"
             @click="move(1)"
           >
@@ -128,69 +122,73 @@ function toggleFullscreen() {
         </div>
       </div>
 
-      <!-- Video slider (transform-based infinite loop) -->
+      <!-- Video slider (two videos) -->
       <div class="fade-right mt-12 mr-[calc(50%-50vw)] overflow-hidden">
         <div
-          class="flex gap-6 pb-2"
-          :class="animating ? 'transition-transform duration-500 ease-out' : ''"
-          :style="{ transform: `translateX(-${offset}px)` }"
-          @transitionend="onTransitionEnd"
+          class="flex gap-6 pb-2 transition-transform duration-500 ease-out"
+          :style="{ transform: `translateX(-${activeIndex * STEP}px)` }"
         >
-          <div v-for="(src, idx) in loopSlides" :key="idx" class="h-106.5 w-185.25 shrink-0">
-            <!-- Active card: green frame + video + controls -->
+          <div v-for="(src, idx) in slides" :key="idx" class="h-106.5 w-185.25 shrink-0">
+            <!-- Same frame for every card (border just turns green when active),
+                 so the shape never changes while sliding. -->
             <div
-              v-if="idx === pos"
-              class="h-full w-full rounded-[28px] border-[3px] border-[#9FE870] p-2.25"
+              class="h-full w-full rounded-[28px] border-[3px] p-2.25"
+              :class="idx === activeIndex ? 'border-[#9FE870]' : 'border-transparent'"
             >
               <div class="relative h-full w-full overflow-hidden rounded-[20px] bg-black">
                 <video
-                  :ref="setVideoEl"
+                  :ref="(el) => setVideoRef(idx, el)"
                   :src="src"
-                  class="h-full w-full object-cover"
+                  class="h-full w-full object-cover transition-opacity"
+                  :class="{ 'opacity-60': idx !== activeIndex }"
                   playsinline
                   preload="metadata"
+                  @loadedmetadata="showPoster"
                   @timeupdate="onTimeUpdate"
                   @play="isPlaying = true"
                   @pause="isPlaying = false"
-                  @click="togglePlay"
+                  @click="idx === activeIndex ? togglePlay() : goTo(idx)"
                 ></video>
 
-                <!-- bottom scrim for control readability -->
-                <div class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-black/30 to-transparent"></div>
-
-                <!-- Controls: two pills, space-between, 12px inset -->
-                <div class="absolute inset-x-3 bottom-3 flex items-center justify-between">
-                  <!-- left pill: pause + timeline -->
-                  <div class="flex h-12.5 items-center gap-5.5 rounded-full bg-[#33333329] py-1 pr-5.5 pl-1 backdrop-blur-sm">
+                <!-- Controls (active card only): two pills, 12px inset -->
+                <div
+                  v-if="idx === activeIndex"
+                  class="absolute inset-x-3 bottom-3 flex items-center justify-between"
+                >
+                  <!-- left pill: play/pause + timeline -->
+                  <div class="flex h-12.5 items-center gap-5.5 rounded-full bg-[#33333329] py-1 pr-5.5 pl-1 backdrop-blur">
                     <button
                       type="button"
-                      :aria-label="isPlaying ? 'Pauza' : 'Ijro etish'"
-                      class="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] text-white backdrop-blur-sm transition-colors hover:bg-[#0B0E04]"
+                      :aria-label="playPauseLabel"
+                      class="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] text-white backdrop-blur transition-colors hover:bg-[#0B0E04]"
                       @click="togglePlay"
                     >
-                      <img v-if="isPlaying" :src="pauseIcon" alt="" class="h-5 w-5" />
+                      <svg v-if="isPlaying" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <rect x="6.5" y="5" width="3.5" height="14" rx="1.75" />
+                        <rect x="14" y="5" width="3.5" height="14" rx="1.75" />
+                      </svg>
                       <svg v-else class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <path d="M8 5v14l11-7z" />
                       </svg>
                     </button>
-                    <div class="relative h-3 w-59.25 cursor-pointer rounded-lg bg-white/25" @click="seek">
+                    <div class="relative h-1.5 w-59.25 cursor-pointer rounded-full bg-white/25" @click="seek">
                       <div
-                        class="absolute inset-y-0 left-0 rounded-lg bg-white"
+                        class="absolute inset-y-0 left-0 rounded-full bg-white"
                         :style="{ width: `${progress * 100}%` }"
                       ></div>
                       <div
-                        class="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white"
+                        class="absolute top-1/2 h-4.5 w-4.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_1px_4px_rgba(0,0,0,0.3)]"
                         :style="{ left: `${progress * 100}%` }"
                       ></div>
                     </div>
                   </div>
 
                   <!-- right pill: mute + expand -->
-                  <div class="flex h-12.5 items-center gap-1 rounded-full bg-[#33333329] p-1 backdrop-blur-sm">
+                  <div class="flex h-12.5 items-center gap-1 rounded-full bg-[#33333329] p-1 backdrop-blur">
                     <button
                       type="button"
-                      aria-label="Ovozsiz"
-                      class="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] backdrop-blur-sm transition-colors hover:bg-[#0B0E04]"
+                      :aria-label="$t('introduction.mute')"
+                      class="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] backdrop-blur transition-colors hover:bg-[#0B0E04]"
                       :class="{ 'opacity-50': isMuted }"
                       @click="toggleMute"
                     >
@@ -198,8 +196,8 @@ function toggleFullscreen() {
                     </button>
                     <button
                       type="button"
-                      aria-label="To'liq ekran"
-                      class="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] backdrop-blur-sm transition-colors hover:bg-[#0B0E04]"
+                      :aria-label="$t('introduction.fullscreen')"
+                      class="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] backdrop-blur transition-colors hover:bg-[#0B0E04]"
                       @click="toggleFullscreen"
                     >
                       <img :src="expandIcon" alt="" class="h-5 w-5" />
@@ -208,22 +206,6 @@ function toggleFullscreen() {
                 </div>
               </div>
             </div>
-
-            <!-- Inactive card: video preview, click to advance -->
-            <button
-              v-else
-              type="button"
-              class="block h-full w-full overflow-hidden rounded-[28px] bg-[#0B0E04]"
-              @click="move(idx - pos)"
-            >
-              <video
-                :src="src"
-                class="h-full w-full object-cover opacity-70 transition-opacity hover:opacity-100"
-                muted
-                preload="metadata"
-                playsinline
-              ></video>
-            </button>
           </div>
         </div>
       </div>

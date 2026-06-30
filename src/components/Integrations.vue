@@ -2,6 +2,8 @@
 // Integrations — bento grid (4 cols x 2 rows, 268px cells, 16px gap):
 //   row 1: [big horizontal (2)] [small] [vertical (rows 1-2)]
 //   row 2: [small]              [big horizontal (2)]  ^continues
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import hemisIcon from '../assets/icons/integration/hemis.svg'
 import clockIcon from '../assets/icons/integration/clock.svg'
 import starIcon from '../assets/icons/integration/star.svg'
@@ -27,19 +29,21 @@ import surgeryImg from '../assets/images/books/surgery.png'
 import bmcImg from '../assets/images/books/bmc.png'
 import logoMark from '../assets/logos/logo.svg'
 
+const { t } = useI18n()
+
 // Card 1 — "HEMIS sinxronizatsiyasi" radar. Coordinates are absolute px within
 // the 552x268 card; the radar rings are concentric, centred at (432, 132).
 const RADAR = { cx: 432, cy: 132 }
 const radarRings = [232, 170, 110, 52] // diameters, outer -> inner
 
 // Floating labels — CENTER coords (cx,cy) in the 552x268 card.
-const radarPills = [
-  { label: "Talabalar ro'yxati", cx: 446, cy: 51 },
-  { label: 'Baholar', cx: 463, cy: 92 },
-  { label: "O'quv reja", cx: 326, cy: 114 },
-  { label: 'Davomat', cx: 374, cy: 148 },
-  { label: 'Guruhlar', cx: 445, cy: 171 },
-]
+const radarPills = computed(() => [
+  { label: t('integrations.pillStudents'), cx: 446, cy: 51 },
+  { label: t('integrations.pillGrades'), cx: 463, cy: 92 },
+  { label: t('integrations.pillCurriculum'), cx: 326, cy: 114 },
+  { label: t('integrations.pillAttendance'), cx: 374, cy: 148 },
+  { label: t('integrations.pillGroups'), cx: 445, cy: 171 },
+])
 
 // Card 4 — "To'lov tizimlari". Each logo sits in a tilted white badge (left/top
 // of the 68x68 badge + Figma angle). The logo's own rotation is baked into its
@@ -60,13 +64,27 @@ const libraries = [
   { src: ziyonetIcon, alt: 'ZiyoNET', left: 427, top: 37, w: 91.87, h: 54.14, lw: 64, lh: 36, rotate: 13.46 },
 ]
 
+// Exact Figma CSS placement (position + transform: rotate about centre),
+// rendered back -> front per the Figma layer order. The covers are clean
+// full-bleed images, so the Figma box-shadows apply directly.
 const books = [
-  { src: bmcImg, left: 438, top: 86, w: 107, h: 151, rotate: 28.69, shadow: '-2px 4px 4px 0px #00000052' },
-  { src: yellowbookImg, left: 381, top: 105, w: 103.66, h: 156.18, rotate: -20.02, shadow: '-1px 4px 4px 0px #00000052' },
-  { src: surgeryImg, left: 465.93, top: 129.59, w: 119, h: 160, rotate: 4.48, shadow: '-3px 4px 4px 0px #00000052' },
-  { src: discoverImg, left: 334, top: 169, w: 95.36, h: 126.44, rotate: -13.48, shadow: '-1px 4px 4px 0px #00000052' },
-  { src: artificialImg, left: 296, top: 171, w: 110, h: 168, rotate: -47.83, shadow: '0px 4px 4px 0px #00000040' },
+  { src: artificialImg, left: 296, top: 171, w: 110, h: 168, rotate: -47.83, shadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' },
+  { src: bmcImg, left: 438, top: 86, w: 107, h: 151, rotate: 28.69, shadow: '-2px 4px 4px rgba(0, 0, 0, 0.32)' },
+  { src: discoverImg, left: 334, top: 169, w: 95.36, h: 126.44, rotate: -13.48, shadow: '-1px 4px 4px rgba(0, 0, 0, 0.32)' },
+  { src: yellowbookImg, left: 381, top: 105, w: 103.66, h: 156.18, rotate: -20.02, shadow: '-1px 4px 4px rgba(0, 0, 0, 0.32)' },
+  { src: surgeryImg, left: 465.93, top: 129.59, w: 119, h: 160, rotate: 4.48, shadow: '-3px 4px 4px rgba(0, 0, 0, 0.32)' },
 ]
+
+function bookStyle(b: (typeof books)[number]) {
+  return {
+    left: `${b.left}px`,
+    top: `${b.top}px`,
+    width: `${b.w}px`,
+    height: `${b.h}px`,
+    transform: `rotate(${b.rotate}deg)`,
+    boxShadow: b.shadow,
+  }
+}
 </script>
 
 <template>
@@ -75,14 +93,14 @@ const books = [
       <!-- Header -->
       <div class="max-w-185.25">
         <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
-          Muassasangiz ishlatadigan<br />
-          tizimlarga allaqachon ulangan
+          {{ $t('integrations.titleLine1') }}<br />
+          {{ $t('integrations.titleLine2') }}
         </h2>
         <p
           class="mt-4 font-sf text-[16px] font-normal leading-5.5 tracking-[0.02em] text-[#333333]"
         >
-          Birinchi darajali HEMIS amalga oshirilishi, ANTIPLAG.UZ bilan akademik halollik, sertifikatlangan<br />
-          Microsoft va Zoom integratsiyalari.
+          {{ $t('integrations.descLine1') }}<br />
+          {{ $t('integrations.descLine2') }}
         </p>
       </div>
 
@@ -153,11 +171,10 @@ const books = [
             <h3
               class="font-sf text-[16px] font-semibold leading-5.5 tracking-[0.02em] text-[#0B0E04]"
             >
-              HEMIS sinxronizatsiyasi
+              {{ $t('integrations.hemisTitle') }}
             </h3>
             <p class="font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#606060]">
-              Talabalar, guruhlar va o'quv reja HEMIS'dan keladi. Baholar, davomat va transkriptlar
-              real vaqtda qaytariladi — tungi paket holda emas.
+              {{ $t('integrations.hemisDesc') }}
             </p>
           </div>
         </div>
@@ -195,8 +212,7 @@ const books = [
               ZOOM
             </h3>
             <p class="font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#606060]">
-              Har bir mashg'ulotga avtomatik uchrashuv yaratiladi va talabalar uchun kirish havola
-              beriladi.
+              {{ $t('integrations.zoomDesc') }}
             </p>
           </div>
         </div>
@@ -251,15 +267,14 @@ const books = [
           </div>
 
           <!-- Title + description -->
-          <div class="absolute flex flex-col gap-1" style="left: 32px; top: 422px; width: 204px">
+          <div class="absolute flex flex-col gap-1" style="left: 32px; top: 400px; width: 204px">
             <h3
               class="font-sf text-[16px] font-semibold leading-5.5 tracking-[0.02em] text-[#0B0E04]"
             >
               Antiplag.uz
             </h3>
             <p class="font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#606060]">
-              Davlat darajasidagi plagiat tekshiruvi. Talaba ishlari avtomatik yuboriladi, hisobot
-              bir necha soniyada qaytadi.
+              {{ $t('integrations.antiplagDesc') }}
             </p>
           </div>
         </div>
@@ -297,16 +312,26 @@ const books = [
             <h3
               class="font-sf text-[16px] font-semibold leading-5.5 tracking-[0.02em] text-[#0B0E04]"
             >
-              To'lov tizimlari
+              {{ $t('integrations.paymentsTitle') }}
             </h3>
             <p class="font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#606060]">
-              Click, Payme, Uzcard, Humo va boshqa to'lov tizimlari bilan integratsiya.
+              {{ $t('integrations.paymentsDesc') }}
             </p>
           </div>
         </div>
         <!-- row 2: big horizontal — E-kutubxona -->
         <div class="relative col-span-2 overflow-hidden rounded-3xl bg-[#F4F4F4]">
-          <!-- Logo badges (tilt baked in svg; badge rotated via CSS) -->
+          <!-- Book stack (rendered back -> front) -->
+          <img
+            v-for="(book, i) in books"
+            :key="i"
+            :src="book.src"
+            alt=""
+            class="absolute"
+            :style="bookStyle(book)"
+          />
+
+          <!-- Logo badges sit on top of the books (frosted glass, tilt baked in svg) -->
           <div
             v-for="lib in libraries"
             :key="lib.alt"
@@ -314,7 +339,7 @@ const books = [
             :style="{ left: `${lib.left}px`, top: `${lib.top}px`, width: `${lib.w}px`, height: `${lib.h}px` }"
           >
             <div
-              class="absolute inset-0 rounded-xl bg-[#FFFFFF52] shadow-[0px_2px_12px_0px_#0000000A]"
+              class="absolute inset-0 rounded-xl bg-[#FFFFFF52] shadow-[0px_2px_12px_0px_#0000000A] backdrop-blur"
               :style="{ transform: `rotate(${lib.rotate}deg)` }"
             ></div>
             <img
@@ -325,32 +350,21 @@ const books = [
             />
           </div>
 
-          <!-- Book stack (rendered back -> front) -->
-          <img
-            v-for="(book, i) in books"
-            :key="i"
-            :src="book.src"
-            alt=""
-            class="absolute"
-            :style="{
-              left: `${book.left}px`,
-              top: `${book.top}px`,
-              width: `${book.w}px`,
-              height: `${book.h}px`,
-              transform: `rotate(${book.rotate}deg)`,
-              boxShadow: book.shadow,
-            }"
-          />
+          <!-- Bottom fade: the covers dissolve into the card background -->
+          <div
+            class="pointer-events-none absolute inset-x-0"
+            style="top: 182px; height: 86px; background: linear-gradient(180deg, rgba(244, 244, 244, 0) 0%, #f4f4f4 100%)"
+          ></div>
 
           <!-- Title + description -->
           <div class="absolute flex flex-col gap-1" style="left: 32px; top: 174px; width: 331px">
             <h3
               class="font-sf text-[16px] font-semibold leading-5.5 tracking-[0.02em] text-[#0B0E04]"
             >
-              E-kutubxona
+              {{ $t('integrations.libraryTitle') }}
             </h3>
             <p class="font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#606060]">
-              EBSCO, Springer, JSTOR, ZiyoNET va boshqa elektron kutubxonalar bilan integratsiya.
+              {{ $t('integrations.libraryDesc') }}
             </p>
           </div>
         </div>

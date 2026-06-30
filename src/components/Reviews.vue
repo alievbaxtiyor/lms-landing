@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import leftIcon from '../assets/icons/left.svg'
 import rightIcon from '../assets/icons/right.svg'
 import logoOXU from '../assets/logos/partners/OXU.png'
 import logoASTI from '../assets/logos/partners/ASTI.png'
 import logoYangiAsr from '../assets/logos/partners/YANGI_ASR.png'
 import logoAIFU from '../assets/logos/partners/AIFU.png'
+
+const { t } = useI18n()
 
 interface Review {
   text: string
@@ -14,32 +17,32 @@ interface Review {
   avatar: string
 }
 
-const reviews: Review[] = [
+const reviews = computed<Review[]>(() => [
   {
-    text: "Mobil ilova orqali o'quvchilar uy vazifasini o'z vaqtida topshiradi. Avtomatik baholash menga haftasiga bir necha soat vaqt qoldiradi. Tahliliy hisobotlar qaror qabul qilishni sezilarli yengillashtirdi.",
+    text: t('reviews.items.r1.text'),
     name: 'Nilufar Yusupova',
-    org: "Matematika o'qituvchisi · Osiyo xalqaro Universiteti",
+    org: t('reviews.items.r1.org'),
     avatar: logoOXU,
   },
   {
-    text: "Minglab talaba uchun jonli darslar va testlarni masshtablash juda oson kechdi. Tahliliy hisobotlar qaror qabul qilishni sezilarli yengillashtirdi. Mobil ilova orqali o'quvchilar uy vazifasini o'z vaqtida topshiradi.",
+    text: t('reviews.items.r2.text'),
     name: 'Bekzod Rahimov',
-    org: "O'quv ishlari prorektori · Texnika universiteti",
+    org: t('reviews.items.r2.org'),
     avatar: logoASTI,
   },
   {
-    text: "lms.uz bizning o'quv jarayonimizni butunlay o'zgartirdi. Endi davomat, baholash va ota-onalar bilan aloqa bitta tizimda. O'qituvchilarning vaqti tejaldi.",
+    text: t('reviews.items.r3.text'),
     name: 'Dilnoza Karimova',
-    org: 'Direktor · Yangi asr universiteti',
+    org: t('reviews.items.r3.org'),
     avatar: logoYangiAsr,
   },
   {
-    text: "Mobil ilova orqali o'quvchilar uy vazifasini o'z vaqtida topshiradi. Avtomatik baholash menga haftasiga bir necha soat vaqt qoldiradi. Tahliliy hisobotlar qaror qabul qilishni sezilarli yengillashtirdi.",
+    text: t('reviews.items.r4.text'),
     name: 'Nilufar Yusupova',
-    org: 'Direktor · Aniq va ijtimoiy fanlar universiteti',
+    org: t('reviews.items.r4.org'),
     avatar: logoAIFU,
   },
-]
+])
 
 const scroller = ref<HTMLElement | null>(null)
 function scroll(direction: number) {
@@ -53,14 +56,14 @@ function scroll(direction: number) {
       <!-- Header: title + carousel buttons -->
       <div class="flex items-end justify-between gap-6">
         <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
-          Muassasa rahbarlari<br />
-          qanday fikrdalar
+          {{ $t('reviews.titleLine1') }}<br />
+          {{ $t('reviews.titleLine2') }}
         </h2>
 
         <div class="flex h-12.5 w-24 shrink-0 items-center justify-center gap-1 rounded-full bg-[#E7F9DB] p-1">
           <button
             type="button"
-            aria-label="Oldingi"
+            :aria-label="$t('reviews.prev')"
             class="flex h-10.5 w-10.5 items-center justify-center rounded-full bg-[#9FE870] transition-colors hover:bg-[#8fdc60]"
             @click="scroll(-1)"
           >
@@ -68,7 +71,7 @@ function scroll(direction: number) {
           </button>
           <button
             type="button"
-            aria-label="Keyingi"
+            :aria-label="$t('reviews.next')"
             class="flex h-10.5 w-10.5 items-center justify-center rounded-full bg-[#9FE870] transition-colors hover:bg-[#8fdc60]"
             @click="scroll(1)"
           >

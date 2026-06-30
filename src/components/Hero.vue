@@ -1,16 +1,25 @@
 <script setup lang="ts">
 // Hero section: title, hero image, university logos.
-import { onMounted, onUnmounted, reactive, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import starsIcon from '../assets/icons/stars.svg'
 import dashboardIcon from '../assets/icons/dashboard.svg'
 import heroCenter from '../assets/images/hero-center.png'
 import heroLeft from '../assets/images/hero-left.png'
 import heroRight from '../assets/images/hero-right.png'
 
+const { t } = useI18n()
+
 // ----- Demo request modal -----
 const showModal = ref(false)
 const form = reactive({ name: '', phone: '', org: '' })
 const status = ref<'idle' | 'sending' | 'success' | 'error'>('idle')
+
+// Submit button label switches between idle and sending states; computed so it
+// re-evaluates on language change.
+const submitLabel = computed(() =>
+  status.value === 'sending' ? t('hero.modal.sending') : t('hero.modal.submit'),
+)
 
 const inputClass =
   'w-full rounded-full border border-[#4A4A4A] bg-[#333333] px-4 py-3.5 font-sf text-[14px] font-medium leading-4.5 tracking-[0.02em] text-white outline-none transition-colors placeholder:text-[#777777] focus:bg-[#4A4A4A]'
@@ -183,22 +192,22 @@ const rowTwo = partners.slice(14)
               />
             </svg>
           </span>
-          asosidagi yagona <br />
+          {{ $t('hero.title.before') }} <br />
           <span class="relative inline-block">
             <img
               :src="starsIcon"
               alt=""
               class="pointer-events-none absolute left-[-0.85em] top-[0.15em] h-[0.8em] w-[0.8em]"
             />
-            LMS ekotizimi
+            {{ $t('hero.title.lms') }}
           </span>
         </h1>
 
         <p
           class="mx-auto mt-6 whitespace-nowrap text-center font-sf text-[20px] font-normal leading-7 tracking-[0.02em] text-[#D2D2D2]"
         >
-          Universitetlar va ta'lim tashkilotlari uchun yaratilgan AI ekotizimi. Kurslar, baholash, <br />
-          analitika va proktoring jarayonlarini boshqarish imkonini beradi.
+          {{ $t('hero.description.line1') }} <br />
+          {{ $t('hero.description.line2') }}
         </p>
 
         <div class="mt-8 flex justify-center">
@@ -207,7 +216,7 @@ const rowTwo = partners.slice(14)
             class="inline-flex h-12.5 w-58.5 items-center justify-center gap-2 rounded-[100px] bg-[#9FE870] px-6 py-3.5 font-sf text-[16px] font-medium text-black shadow-[0px_8px_48px_0px_#9FE8704D] transition-colors hover:bg-[#aef07e]"
             @click="openModal"
           >
-            Demo so'rash - bepul
+            {{ $t('common.demo') }}
             <svg
               class="h-5 w-5"
               viewBox="0 0 24 24"
@@ -272,7 +281,7 @@ const rowTwo = partners.slice(14)
         <p
           class="text-center font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#D2D2D2]"
         >
-          O'zbekistondagi 20+ ta'lim muassasasi ishonadi
+          {{ $t('hero.partners') }}
         </p>
 
         <!-- Row 1: scrolls right -> left -->
@@ -336,7 +345,7 @@ const rowTwo = partners.slice(14)
           <div class="flex flex-col items-center gap-4">
             <button
               type="button"
-              aria-label="Yopish"
+              :aria-label="$t('hero.modal.close')"
               class="flex h-10.5 w-10.5 items-center justify-center self-end rounded-full bg-[#FFFFFF1A] p-2.75 text-[#BBBBBB] transition-colors hover:bg-[#FFFFFF26] hover:text-white"
               @click="closeModal"
             >
@@ -353,7 +362,7 @@ const rowTwo = partners.slice(14)
             </div>
 
             <h2 class="text-center text-[24px] font-semibold leading-8 tracking-[0.02em] text-white">
-              Demo so'rash-bepul
+              {{ $t('hero.modal.title') }}
             </h2>
           </div>
 
@@ -361,27 +370,27 @@ const rowTwo = partners.slice(14)
           <form class="flex flex-col gap-6" @submit.prevent="submitDemo">
             <div class="flex flex-col gap-1.5">
               <label for="demo-name" class="text-[14px] font-medium leading-4.5 tracking-[0.02em] text-[#BBBBBB]">
-                Ismingiz
+                {{ $t('hero.modal.name.label') }}
               </label>
               <input
                 id="demo-name"
                 v-model="form.name"
                 type="text"
-                placeholder="Ismingizni yozing"
+                :placeholder="$t('hero.modal.name.placeholder')"
                 :class="inputClass"
               />
             </div>
 
             <div class="flex flex-col gap-1.5">
               <label for="demo-phone" class="text-[14px] font-medium leading-4.5 tracking-[0.02em] text-[#BBBBBB]">
-                Telefon raqamingiz
+                {{ $t('hero.modal.phone.label') }}
               </label>
               <input
                 id="demo-phone"
                 :value="form.phone"
                 type="tel"
                 inputmode="numeric"
-                placeholder="+998"
+                :placeholder="$t('hero.modal.phone.placeholder')"
                 :class="inputClass"
                 @input="formatPhone"
               />
@@ -389,13 +398,13 @@ const rowTwo = partners.slice(14)
 
             <div class="flex flex-col gap-1.5">
               <label for="demo-org" class="text-[14px] font-medium leading-4.5 tracking-[0.02em] text-[#BBBBBB]">
-                Tashkilot nomi
+                {{ $t('hero.modal.org.label') }}
               </label>
               <input
                 id="demo-org"
                 v-model="form.org"
                 type="text"
-                placeholder="Tashkilot nomini yozing"
+                :placeholder="$t('hero.modal.org.placeholder')"
                 :class="inputClass"
               />
             </div>
@@ -404,19 +413,19 @@ const rowTwo = partners.slice(14)
               v-if="status === 'success'"
               class="text-center text-[12px] font-medium leading-none tracking-[0.02em] text-[#9FE870]"
             >
-              Rahmat! Tez orada siz bilan bog'lanamiz.
+              {{ $t('hero.modal.success') }}
             </p>
             <p
               v-else-if="status === 'error'"
               class="text-center text-[12px] font-medium leading-none tracking-[0.02em] text-[#FB3748]"
             >
-              Xatolik yuz berdi. Iltimos, ism va telefonni tekshirib qayta urinib ko'ring.
+              {{ $t('hero.modal.error') }}
             </p>
             <p
               v-else
               class="text-center text-[12px] font-normal leading-none tracking-[0.02em] text-[#777777]"
             >
-              Men ma'lumotlarimdan foydalanish shartlariga roziman
+              {{ $t('hero.modal.consent') }}
             </p>
 
             <button
@@ -424,7 +433,7 @@ const rowTwo = partners.slice(14)
               :disabled="status === 'sending'"
               class="flex h-12.5 w-full items-center justify-center rounded-full bg-[#9FE870] px-6 py-3.5 text-[16px] font-medium leading-5.5 tracking-[0.02em] text-[#0B0E04] transition-colors hover:bg-[#aef07e] disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {{ status === 'sending' ? 'Yuborilmoqda...' : "Jo'natish" }}
+              {{ submitLabel }}
             </button>
           </form>
         </div>

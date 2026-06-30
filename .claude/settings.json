@@ -1,7 +1,20 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(npm install vue-router@4 2>&1)"
+      "PowerShell(npm install vue-router@4 2>&1)",
+      "PowerShell(npm install vue-i18n@10 2>&1)",
+      "Bash(npx vue-tsc *)",
+      "PowerShell(npx vue-tsc --noEmit)",
+      "PowerShell(npx vue-tsc --noEmit -p tsconfig.app.json 2>&1)",
+      "Bash(echo \"EXIT CODE: $?\")",
+      "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Select-Object ProcessId, @{N='Cmd';E={$_.CommandLine.Substring\\(0,[Math]::Min\\(90,$_.CommandLine.Length\\)\\)}} | Format-Table -AutoSize -Wrap)",
+      "PowerShell(Stop-Process -Id 19328,11408 -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(npm run dev)",
+      "Bash(identify src/assets/images/step-secure.png)",
+      "Bash(python -c \"from PIL import Image; im=Image.open\\('src/assets/images/step-secure.png'\\); print\\(im.size\\)\")",
+      "Bash(npx playwright *)",
+      "Bash(npm run *)",
+      "Read(//tmp/**)"
     ]
   }
 }

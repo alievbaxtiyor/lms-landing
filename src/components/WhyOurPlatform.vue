@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import PhysicsTags from './PhysicsTags.vue'
 import whyusBack from '../assets/images/whyusback.png'
 import whyusOn from '../assets/images/whyuson.png'
@@ -18,6 +19,8 @@ import microphoneIcon from '../assets/icons/cards/microphone.svg'
 import eyeIcon from '../assets/icons/cards/eye.svg'
 import screenIcon from '../assets/icons/cards/screen.svg'
 import secureIcon from '../assets/icons/cards/secure.svg'
+
+const { t } = useI18n()
 
 // Swap hard-coded stroke/fill colors for currentColor (keeps fill="none").
 function recolor(svg: string): string {
@@ -58,32 +61,32 @@ interface Item {
 }
 
 // Stats for the first item (items 3-4 TODO — fill when content is provided).
-const aiStats: Stat[] = [
-  { icon: clockIcon, color: '#71DD2B', label: 'Generatsiya vaqti', value: "o'rtacha 3 daqiqa" },
-  { icon: fastIcon, color: '#0073F2', label: 'Tezligi', value: "4x tezroq qo'lda yaratishdan" },
+const aiStats = computed<Stat[]>(() => [
+  { icon: clockIcon, color: '#71DD2B', label: t('why.aiStats.time.label'), value: t('why.aiStats.time.value') },
+  { icon: fastIcon, color: '#0073F2', label: t('why.aiStats.speed.label'), value: t('why.aiStats.speed.value') },
   {
     icon: securityRowIcon,
     color: '#EF4444',
-    label: 'Maxfiylik',
-    value: "ma'lumotlar 100% muhofazalangan",
+    label: t('why.aiStats.privacy.label'),
+    value: t('why.aiStats.privacy.value'),
   },
-]
-const courseTags: Tag[] = [
-  { text: 'Interaktiv video kurslar', color: '#99EE5C8F' },
-  { text: 'Topshiriqlar', color: '#FFF3748F' },
-  { text: 'Davomat', color: '#FFAFEE8F' },
-  { text: 'Jadval boshqaruvi', color: '#6FE6A18F' },
-  { text: 'Testlar va baholash', color: '#AFD5FF8F' },
-  { text: 'Elektron jurnal', color: '#FFBC748F' },
-  { text: 'Elektron resurslar', color: '#C0AFFF8F' },
-]
-const proctorCards: ProctorCard[] = [
-  { icon: faceIcon, label: 'Yuzni tanish' },
-  { icon: microphoneIcon, label: 'Audio tahlili' },
-  { icon: eyeIcon, label: 'SMOWL' },
-  { icon: screenIcon, label: 'Tailview' },
-  { icon: secureIcon, label: 'SecureProctor' },
-]
+])
+const courseTags = computed<Tag[]>(() => [
+  { text: t('why.courseTags.video'), color: '#99EE5C8F' },
+  { text: t('why.courseTags.assignments'), color: '#FFF3748F' },
+  { text: t('why.courseTags.attendance'), color: '#FFAFEE8F' },
+  { text: t('why.courseTags.schedule'), color: '#6FE6A18F' },
+  { text: t('why.courseTags.tests'), color: '#AFD5FF8F' },
+  { text: t('why.courseTags.journal'), color: '#FFBC748F' },
+  { text: t('why.courseTags.resources'), color: '#C0AFFF8F' },
+])
+const proctorCards = computed<ProctorCard[]>(() => [
+  { icon: faceIcon, label: t('why.proctorCards.face') },
+  { icon: microphoneIcon, label: t('why.proctorCards.audio') },
+  { icon: eyeIcon, label: t('why.proctorCards.smowl') },
+  { icon: screenIcon, label: t('why.proctorCards.tailview') },
+  { icon: secureIcon, label: t('why.proctorCards.secureProctor') },
+])
 
 const NODE_BG: Record<TreeNode['variant'], string> = {
   purple: '#D9C7FF',
@@ -103,14 +106,14 @@ function elbow(x1: number, y1: number, x2: number, y2: number, r = 12): string {
 
 // "Analitika va hisobotlar" node tree — two-row layout in a 488×112 space so the
 // pills fit full-size with clear spacing inside the fixed card.
-const analyticsTree = {
+const analyticsTree = computed<{ nodes: TreeNode[]; paths: string[] }>(() => ({
   nodes: [
-    { label: 'Kurs analitikasi', x: 0, y: 0, variant: 'purple' },
-    { label: 'Hisobotlar', x: 16, y: 62, variant: 'green' },
-    { label: 'Talaba', x: 210, y: 4, variant: 'white' },
-    { label: "O'qituvchi", x: 360, y: 4, variant: 'white' },
-    { label: "So'rovnoma", x: 210, y: 66, variant: 'white' },
-    { label: 'Davomat', x: 365, y: 66, variant: 'white' },
+    { label: t('why.analyticsTree.courseAnalytics'), x: 0, y: 0, variant: 'purple' },
+    { label: t('why.analyticsTree.reports'), x: 16, y: 62, variant: 'green' },
+    { label: t('why.analyticsTree.student'), x: 210, y: 4, variant: 'white' },
+    { label: t('why.analyticsTree.teacher'), x: 360, y: 4, variant: 'white' },
+    { label: t('why.analyticsTree.survey'), x: 210, y: 66, variant: 'white' },
+    { label: t('why.analyticsTree.attendance'), x: 365, y: 66, variant: 'white' },
   ] as TreeNode[],
   paths: [
     elbow(150, 86, 210, 24), // Hisobotlar → Talaba
@@ -119,84 +122,100 @@ const analyticsTree = {
     // Hisobotlar → passes through So'rovnoma → continues to Davomat
     'M 150 86 H 365',
   ],
-}
+}))
 
-const items: Item[] = [
+const items = computed<Item[]>(() => [
   {
     rowIcon: starIcon,
-    label: 'AI yordamchi - kontent yaratish',
-    title: 'AI yordamchi - kontent yaratish',
-    description:
-      "O'z materiallaringizdan test savollari, mashqlar, rubrikalar va qo'shimcha tushuntirish kontentini avtomatik yarating — ochiq internetdan emas.",
-    stats: aiStats,
+    label: t('why.items.ai.label'),
+    title: t('why.items.ai.title'),
+    description: t('why.items.ai.description'),
+    stats: aiStats.value,
   },
   {
     rowIcon: opportunityIcon,
-    label: 'Kurs uchun zarur barcha imkoniyatlar',
-    title: 'Kurs uchun zarur barcha imkoniyatlar',
-    description:
-      "Yettita asosiy modul, bitta ma'lumotlar modeli. Turli vositalar o'rtasida sakrashga hojat yo'q — har bir topshiriq, davomat va baho bir xil yozuvga jamlanadi.",
-    tags: courseTags,
+    label: t('why.items.course.label'),
+    title: t('why.items.course.title'),
+    description: t('why.items.course.description'),
+    tags: courseTags.value,
   },
   {
     rowIcon: securityRowIcon,
-    label: 'Ishonchli imtihon tizimi - proktoring',
-    title: 'Ishonchli imtihon tizimi - proktoring',
-    description:
-      "Biometrik, xulq-atvor va audio signallar bilan ko'p ta'minlovchili proktoring qatlami — birinchi kadrdan oxirgi hisobotgacha auditga tayyor.",
-    cards: proctorCards,
+    label: t('why.items.proctoring.label'),
+    title: t('why.items.proctoring.title'),
+    description: t('why.items.proctoring.description'),
+    cards: proctorCards.value,
   },
   {
     rowIcon: analyticsIcon,
-    label: 'Analitika va hisobotlar',
-    title: 'Analitika va hisobotlar',
-    description:
-      "LMS.uz dagi har bir ma'lumot shaxs, kurs va hodisaga bog'langan — shu sababli har bir hisobot qayta tiklanadigan, auditga tayyor va vazirlik qabul qiladigan formatda eksport qilinadi.",
-    tree: analyticsTree,
+    label: t('why.items.analytics.label'),
+    title: t('why.items.analytics.title'),
+    description: t('why.items.analytics.description'),
+    tree: analyticsTree.value,
   },
-]
+])
 
 const active = ref(0)
-const current = computed(() => items[active.value])
+const current = computed(() => items.value[active.value])
 
 // Security-expertise steps (second big card). Each step's badge gets a
 // progressively darker green.
-const securitySteps = [
+const securitySteps = computed(() => [
   {
     num: 1,
     color: '#71DD2B',
-    title: "Axborot yig‘ish va tizimni tahlil qilish",
-    desc: "Platforma arxitekturasi, ma'lumotlar oqimi va xavf yuzasi tahlil qilindi",
+    title: t('why.securitySteps.step1.title'),
+    desc: t('why.securitySteps.step1.desc'),
   },
   {
     num: 2,
     color: '#5FC11F',
-    title: "Texnik vazifa va me'yoriy talablarga moslikni tekshirish",
-    desc: "Tizim standartlar va texnik talablar asosida tekshirildi",
+    title: t('why.securitySteps.step2.title'),
+    desc: t('why.securitySteps.step2.desc'),
   },
   {
     num: 3,
     color: '#4E9F1A',
-    title: "Zaifliklarni aniqlash va ekspertiza xulosasi",
-    desc: "Zaifliklar aniqlandi, bartaraf etildi va ekspertiza xulosasi berildi",
+    title: t('why.securitySteps.step3.title'),
+    desc: t('why.securitySteps.step3.desc'),
   },
-]
+])
+
+// Recognition / compliance facts — now shown inside the security modal.
+const securityExtras = computed(() => [
+  {
+    title: t('why.securityExtras.recognition.title'),
+    desc: t('why.securityExtras.recognition.desc'),
+  },
+  {
+    title: t('why.securityExtras.compliance.title'),
+    desc: t('why.securityExtras.compliance.desc'),
+  },
+])
+
+// Security recognition modal (opened from the hero button).
+const showSecurityModal = ref(false)
+const onKey = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') showSecurityModal.value = false
+}
+onMounted(() => window.addEventListener('keydown', onKey))
+onUnmounted(() => window.removeEventListener('keydown', onKey))
 
 // Stat cards inside the big green card.
-const stats = [
-  { value: '40K+', label: 'Talabalar soni', wide: false },
-  { value: '14K+', label: 'Video kontent soni', wide: false },
-  { value: '650K+', label: 'Otkazilgan imtihonlar soni', wide: true },
-  { value: '115+', label: 'Xizmatlar soni', wide: false },
-  { value: '3K', label: 'Profesional kurslar', wide: false },
-]
+const stats = computed(() => [
+  { value: '40K+', label: t('why.stats.students'), wide: false },
+  { value: '14K+', label: t('why.stats.videoContent'), wide: false },
+  { value: '650K+', label: t('why.stats.exams'), wide: true },
+  { value: '115+', label: t('why.stats.services'), wide: false },
+  { value: '3K', label: t('why.stats.courses'), wide: false },
+])
 </script>
 
 <template>
   <section class="text-[#0B0E04]">
     <div class="mx-auto max-w-296 px-8 py-20">
       <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
-        Nima uchun bizning platforma?
+        {{ $t('why.sectionTitle') }}
       </h2>
 
       <!-- Selector list + info card -->
@@ -238,11 +257,13 @@ const stats = [
           </button>
         </div>
 
-        <!-- Right: info card — 294px to fit content; taller only for the tag physics -->
+        <!-- Right: info card — one fixed height for every selector so the box
+             never resizes; its content cross-fades on change (.why-swap below). -->
         <div
-          class="flex w-full shrink-0 flex-col gap-6 rounded-3xl border border-[#F4F4F4] bg-[#F4F4F4] p-8 lg:w-138 lg:overflow-hidden"
-          :class="current.tags ? 'lg:h-90' : 'lg:h-73.5'"
+          class="flex w-full shrink-0 flex-col rounded-3xl border border-[#F4F4F4] bg-[#F4F4F4] p-8 lg:h-90 lg:w-138 lg:overflow-hidden"
         >
+          <Transition name="why-swap" mode="out-in">
+            <div :key="active" class="flex min-h-0 flex-1 flex-col gap-6">
           <div class="shrink-0">
             <h3 class="font-sf text-[24px] font-semibold leading-8 tracking-[0.02em] text-[#0B0E04]">
               {{ current.title }}
@@ -343,6 +364,8 @@ const stats = [
             </div>
           </div>
           </div>
+            </div>
+          </Transition>
         </div>
       </div>
 
@@ -391,45 +414,140 @@ const stats = [
         </div>
       </div>
 
-      <!-- Security expertise card -->
+      <!-- Security expertise hero: full shield background + title + intro + the
+           3 expertise steps, held in a width-capped left column so the shields
+           stay fully visible on the right. The "Rasmiy e'tirof va hujjatlar"
+           button opens the recognition modal (registry № 2430 + the two facts). -->
       <div
-        class="relative mt-8 h-119 w-full max-w-280 overflow-hidden rounded-3xl bg-cover bg-center"
-        :style="{ backgroundImage: `url(${stepSecure})` }"
+        class="relative mt-8 w-full max-w-280 overflow-hidden rounded-[28px]"
+        style="background: linear-gradient(135deg, #f5f9fc 0%, #e9f0f6 100%)"
       >
-        <div class="absolute top-14 left-14 w-147.75 max-w-[calc(100%-7rem)]">
-          <h3
-            class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]"
-          >
-            3 bosqichli xavfsizlik<br />
-            ekspertizasidan o'tgan
-          </h3>
+        <img :src="stepSecure" alt="" class="pointer-events-none absolute inset-0 h-full w-full object-cover object-right" />
+        <div
+          class="pointer-events-none absolute inset-0"
+          style="background: linear-gradient(90deg, rgba(245,249,252,0.96) 0%, rgba(245,249,252,0.88) 42%, rgba(245,249,252,0) 66%)"
+        ></div>
 
-          <div class="mt-6 space-y-3">
+        <div class="relative max-w-165 p-12 sm:p-14">
+          <h3 class="font-sf text-[32px] font-semibold leading-10 tracking-[0.01em] text-[#0B0E04]">
+            {{ $t('why.security.cardTitle') }}
+          </h3>
+          <p class="mt-3.5 font-sf text-[16px] leading-[23px] tracking-[0.02em] text-[#333]">
+            {{ $t('why.security.cardIntro') }}
+          </p>
+
+          <div class="mt-6 flex max-w-135 flex-col gap-2.5">
             <div
               v-for="step in securitySteps"
               :key="step.num"
-              class="flex h-17 items-center gap-4 rounded-2xl bg-[#FFFFFFA3] p-3"
+              class="flex items-start gap-4 rounded-2xl bg-white/[0.78] p-3.5 px-4.5 backdrop-blur-sm"
             >
               <span
-                class="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-full border border-white/70 font-sf text-[16px] font-semibold text-white"
+                class="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-full border border-white/70 font-sf text-[15px] font-semibold text-white"
                 :style="{ backgroundColor: step.color }"
               >
                 {{ step.num }}
               </span>
-              <p
-                class="w-60.25 shrink-0 font-sf text-[16px] font-semibold leading-5.5 tracking-[0.02em] text-[#0B0E04]"
-              >
-                {{ step.title }}
-              </p>
-              <p
-                class="w-64 font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#4A4A4A]"
-              >
-                {{ step.desc }}
-              </p>
+              <div class="flex flex-col gap-0.5">
+                <p class="font-sf text-[15px] font-semibold leading-5 tracking-[0.01em] text-[#0B0E04]">{{ step.title }}</p>
+                <p class="font-sf text-[13px] leading-[18px] tracking-[0.01em] text-[#5A5A5A]">{{ step.desc }}</p>
+              </div>
             </div>
           </div>
+
+          <button
+            type="button"
+            @click="showSecurityModal = true"
+            class="mt-6 inline-flex items-center gap-2.5 rounded-full bg-primary-400 px-6 py-3.5 font-sf text-[15px] font-semibold tracking-[0.01em] text-[#0B0E04] shadow-[0_6px_18px_rgba(159,232,112,0.45)] transition hover:bg-[#8fdc5c]"
+          >
+            Rasmiy e'tirof va hujjatlar
+            <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
   </section>
+
+  <Teleport to="body">
+    <Transition
+      enter-active-class="transition duration-200" enter-from-class="opacity-0"
+      leave-active-class="transition duration-150" leave-to-class="opacity-0"
+    >
+      <div
+        v-if="showSecurityModal"
+        @click.self="showSecurityModal = false"
+        class="fixed inset-0 z-[1000] flex items-center justify-center bg-[#0B0E04]/55 p-6 backdrop-blur-sm"
+      >
+        <div class="relative w-full max-w-155 overflow-hidden rounded-3xl bg-white shadow-[0px_30px_80px_0px_#0B0E0440]">
+          <!-- Header: signature bright-green band with dark text (mirrors the
+               big stats card), so the modal reads as part of the brand. -->
+          <div class="relative overflow-hidden bg-[#9FE870] p-8 pb-9">
+            <svg class="pointer-events-none absolute -top-6 -right-5 opacity-[0.14]" width="200" height="220" viewBox="0 0 24 24" fill="none" stroke="#0B0E04" stroke-width="1">
+              <path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-4z" />
+            </svg>
+            <button
+              type="button" @click="showSecurityModal = false"
+              class="absolute top-5 right-5 flex h-9 w-9 items-center justify-center rounded-full bg-[#0B0E04]/[0.07] text-[#0B0E04] transition hover:bg-[#0B0E04]/[0.13]"
+            >
+              <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <h3 class="mt-2 max-w-110 font-sf text-[24px] font-semibold leading-[30px] tracking-[0.01em] text-[#0B0E04]">
+              Davlat tomonidan tan olingan ishonchli tizim
+            </h3>
+          </div>
+
+          <!-- Registry number: floating card overlapping the header, with a soft
+               green-tinted shadow (same green glow used on the site's buttons). -->
+          <div class="relative mx-7 -mt-6 flex items-center gap-4 rounded-2xl border border-[#EAF2E1] bg-white p-4.5 shadow-[0px_10px_30px_0px_#9FE8702E]">
+            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#9FE870] text-[#0B0E04]">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-4z" /><path d="M9 12l2 2 4-4" /></svg>
+            </span>
+            <div>
+              <span class="block font-sf text-[12px] font-medium tracking-[0.03em] text-[#777777] uppercase">Davlat reyestri raqami</span>
+              <span class="block font-sf text-[28px] font-semibold leading-tight tracking-[0.01em] text-[#0B0E04]">№ 2430</span>
+            </div>
+          </div>
+
+          <!-- Recognition / compliance facts -->
+          <div class="px-7 pt-5 pb-7">
+            <div
+              v-for="(x, i) in securityExtras"
+              :key="x.title"
+              class="flex items-start gap-3.5 py-4"
+              :class="i > 0 && 'border-t border-[#F1F1F1]'"
+            >
+              <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#E7F9DB] text-[#3D7D14]">
+                <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7" /></svg>
+              </span>
+              <div>
+                <p class="font-sf text-[16px] font-semibold leading-[21px] tracking-[0.01em] text-[#0B0E04]">{{ x.title }}</p>
+                <p class="mt-1.5 font-sf text-[14px] leading-5 tracking-[0.01em] text-[#606060]">{{ x.desc }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
+
+<style scoped>
+/* Smooth cross-fade when switching selectors. The info box keeps a fixed
+   height, so only its content swaps — no layout jump. */
+.why-swap-enter-active,
+.why-swap-leave-active {
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s ease;
+}
+.why-swap-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.why-swap-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+</style>

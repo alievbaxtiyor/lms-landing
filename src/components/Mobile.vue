@@ -19,11 +19,10 @@ const badge = 'rounded-full bg-[#FFFFFFA3] shadow-[0_6px_24px_rgba(0,0,0,0.10)] 
         <!-- Left column -->
         <div class="w-full shrink-0 lg:max-w-138">
           <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
-            Barcha foydalanuvchilar uchun qulay mobil ilova
+            {{ $t('mobile.title') }}
           </h2>
           <p class="mt-4 font-sf text-[16px] font-normal leading-5.5 tracking-[0.02em] text-[#333333]">
-            To'liq oflayn kursli, sinf darajasidagi push xabarnomali va mintaqadagi past traffik
-            tarmoqlar uchun moslashtirilgan native iOS hamda Android ilovalari.
+            {{ $t('mobile.description') }}
           </p>
 
           <!-- QR card -->
@@ -33,7 +32,7 @@ const badge = 'rounded-full bg-[#FFFFFFA3] shadow-[0_6px_24px_rgba(0,0,0,0.10)] 
             <span
               class="self-end font-sf text-[16px] font-medium leading-5.5 tracking-[0.02em] text-[#0B0E04]"
             >
-              Yuklash uchun skanerlang
+              {{ $t('mobile.scanToDownload') }}
             </span>
             <img :src="qrIcon" alt="QR" class="h-32.25 w-32.25 shrink-0" />
           </div>
@@ -79,7 +78,7 @@ const badge = 'rounded-full bg-[#FFFFFFA3] shadow-[0_6px_24px_rgba(0,0,0,0.10)] 
                 4 244+
               </p>
               <p class="font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#4A4A4A]">
-                foydalanuvchilar
+                {{ $t('mobile.usersLabel') }}
               </p>
             </div>
           </div>

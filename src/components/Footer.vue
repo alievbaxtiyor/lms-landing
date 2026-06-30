@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import logoMark from '../assets/logos/logo.svg'
 import logoWordmark from '../assets/logos/lms.uz.svg'
 import instagramIcon from '../assets/icons/instagram.svg'
@@ -6,26 +8,28 @@ import telegramIcon from '../assets/icons/telegram.svg'
 import facebookIcon from '../assets/icons/facebook.svg'
 import youtubeIcon from '../assets/icons/youtube.svg'
 
+const { t } = useI18n()
+
 interface FooterLink {
   label: string
   href: string
 }
 
-const platforma: FooterLink[] = [
-  { label: 'Platforma imkoniyatlari', href: '#imkoniyatlar' },
-  { label: 'AI yordamchisi', href: '#ai' },
-  { label: 'Proktoring', href: '#proktoring' },
-  { label: 'Analitika', href: '#analitika' },
-]
+const platforma = computed<FooterLink[]>(() => [
+  { label: t('footer.platformaFeatures'), href: '#imkoniyatlar' },
+  { label: t('footer.aiAssistant'), href: '#ai' },
+  { label: t('footer.proctoring'), href: '#proktoring' },
+  { label: t('footer.analytics'), href: '#analitika' },
+])
 
-const imkoniyatlar: FooterLink[] = [
-  { label: 'Integratsiyalar', href: '#integratsiyalar' },
-  { label: 'Mobil ilova', href: '#mobil' },
-  { label: 'Workflows', href: '#workflows' },
-]
+const imkoniyatlar = computed<FooterLink[]>(() => [
+  { label: t('footer.integrations'), href: '#integratsiyalar' },
+  { label: t('footer.mobileApp'), href: '#mobil' },
+  { label: t('footer.workflows'), href: '#workflows' },
+])
 
-const phone = '+998 77 013 78 04'
-const email = 'info@lms.uz'
+const phone = computed(() => t('common.phone'))
+const email = computed(() => t('common.email'))
 
 const socials = [
   { label: 'Instagram', href: '#', icon: instagramIcon },
@@ -62,20 +66,19 @@ const socials = [
         <h2
           class="mx-auto max-w-185.5 font-sf text-[64px] font-medium leading-18 tracking-[0.01em]"
         >
-          <span class="text-[#9FE870]">lms.uz</span> ni jonli ko’ring
+          <span class="text-[#9FE870]">lms.uz</span>{{ $t('footer.ctaTitleSuffix') }}
         </h2>
         <p
           class="mx-auto mt-6 max-w-185.5 font-sf text-[20px] font-normal leading-7 tracking-[0.02em] text-[#D2D2D2]"
         >
-          Yechimlar jamoamiz bilan 15 daqiqalik tanishuv. Muassasangiz hajmiga mos namuna
-          ma'lumotlarni olib kelamiz — slayd taqdimoti emas.
+          {{ $t('footer.ctaDesc') }}
         </p>
 
         <a
           href="#demo"
           class="mt-8 inline-flex h-12.5 w-58.5 items-center justify-center gap-2 rounded-[100px] bg-[#9FE870] px-6 py-3.5 font-sf text-[16px] font-medium text-black shadow-[0px_8px_48px_0px_#9FE8704D] transition-colors hover:bg-[#aef07e]"
         >
-          Demo so'rash - bepul
+          {{ $t('common.demo') }}
           <svg
             class="h-5 w-5"
             viewBox="0 0 24 24"
@@ -104,8 +107,8 @@ const socials = [
           <p
             class="mt-4 font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#A4A4A4]"
           >
-            Zamonaviy ta'lim muassasalari<br />
-            uchun kompleks LMS platformasi
+            {{ $t('footer.taglineLine1') }}<br />
+            {{ $t('footer.taglineLine2') }}
           </p>
         </div>
 
@@ -114,7 +117,7 @@ const socials = [
           <!-- Platforma -->
           <nav class="flex w-51.25 flex-col gap-6">
             <p class="font-sf text-[14px] font-medium leading-4.5 tracking-[0.02em] text-[#E8E8E8]">
-              Platforma
+              {{ $t('footer.colPlatforma') }}
             </p>
             <a
               v-for="link in platforma"
@@ -129,7 +132,7 @@ const socials = [
           <!-- Imkoniyatlar -->
           <nav class="flex w-51.25 flex-col gap-6">
             <p class="font-sf text-[14px] font-medium leading-4.5 tracking-[0.02em] text-[#E8E8E8]">
-              Imkoniyatlar
+              {{ $t('footer.colImkoniyatlar') }}
             </p>
             <a
               v-for="link in imkoniyatlar"
@@ -144,7 +147,7 @@ const socials = [
           <!-- Bog'lanish -->
           <div class="flex w-51.25 flex-col gap-6">
             <p class="font-sf text-[14px] font-medium leading-4.5 tracking-[0.02em] text-[#E8E8E8]">
-              Bog'lanish
+              {{ $t('footer.colContact') }}
             </p>
             <a
               :href="`tel:${phone.replace(/[\s+]/g, '')}`"
@@ -179,7 +182,7 @@ const socials = [
       <p
         class="mt-9 text-center font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-white/55"
       >
-        © 2026 LMS.uz — Barcha huquqlar himoyalangan
+        {{ $t('footer.copyright') }}
       </p>
     </div>
   </footer>

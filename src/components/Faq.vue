@@ -1,34 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 interface QA {
   q: string
   a: string
 }
 
-// First answer is from Figma; the rest are placeholders — replace when provided.
-const faqs: QA[] = [
-  {
-    q: "Ma'lumotlar xavfsizligi qanday ta'minlanadi?",
-    a: "Ma'lumotlar shifrlangan holda saqlanadi, muntazam zaxira nusxalari olinadi va kirish huquqlari rollar bo'yicha boshqariladi. Serverlar O'zbekistonda joylashtirilishi mumkin.",
-  },
-  {
-    q: "To'lov tizimlari bilan integratsiya bormi?",
-    a: "Ha, Click, Payme, Uzcard, Humo va boshqa to'lov tizimlari bilan integratsiya mavjud.",
-  },
-  {
-    q: 'lms.uz qanday muassasalar uchun mos?',
-    a: "Universitetlar, institutlar, kollejlar va boshqa ta'lim muassasalari uchun mos keladi.",
-  },
-  {
-    q: "Platformani o'rnatish qancha vaqt oladi?",
-    a: "O'rnatish va sozlash odatda bir necha kun ichida yakunlanadi.",
-  },
-  {
-    q: 'Narxlar qanday belgilanadi?',
-    a: 'Narxlar muassasa hajmi va tanlangan imkoniyatlar to‘plamiga qarab belgilanadi.',
-  },
-]
+const { tm } = useI18n()
+
+const faqs = computed<QA[]>(() => tm('faq.items') as QA[])
 
 const open = ref(0)
 function toggle(i: number) {
@@ -44,8 +25,8 @@ function toggle(i: number) {
         <h2
           class="max-w-138 font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]"
         >
-          Qaror qabul <br />
-          qilishingizga yordam beradigan javoblar
+          {{ $t('faq.titleLine1') }} <br />
+          {{ $t('faq.titleLine2') }}
         </h2>
 
         <!-- Accordion -->

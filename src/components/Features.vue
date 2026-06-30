@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import { features } from '../data/features'
+
+const { t } = useI18n()
 
 const scroller = ref<HTMLElement | null>(null)
 
@@ -16,14 +19,15 @@ function scroll(direction: number) {
       <!-- Header: title + carousel arrows -->
       <div class="flex items-end justify-between gap-6">
         <h2 class="font-sf text-5xl font-bold leading-tight tracking-tight">
-          Bitta platforma,<br />
-          <span class="text-[#9FE870]">20+</span> kuchli imkoniyat
+          {{ $t('features.titlePre') }}<br />
+          <span class="text-[#9FE870]">{{ $t('features.titleHighlight') }}</span>
+          {{ $t('features.titlePost') }}
         </h2>
 
         <div class="flex h-12.5 w-24 shrink-0 items-center justify-center gap-1 rounded-full bg-[#333333] p-1">
           <button
             type="button"
-            aria-label="Oldingi"
+            :aria-label="t('features.detail.prev')"
             class="flex h-10.5 w-10.5 items-center justify-center rounded-full bg-[#0B0E04] text-white transition-colors hover:bg-[#151a08]"
             @click="scroll(-1)"
           >
@@ -33,7 +37,7 @@ function scroll(direction: number) {
           </button>
           <button
             type="button"
-            aria-label="Keyingi"
+            :aria-label="t('features.detail.next')"
             class="flex h-10.5 w-10.5 items-center justify-center rounded-full bg-[#0B0E04] text-white transition-colors hover:bg-[#151a08]"
             @click="scroll(1)"
           >
@@ -58,7 +62,7 @@ function scroll(direction: number) {
           <span
             class="mt-4 font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#D2D2D2]"
           >
-            {{ f.label }}
+            {{ $t('features.items.' + f.slug + '.label') }}
           </span>
         </RouterLink>
       </div>

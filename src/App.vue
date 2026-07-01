@@ -3,6 +3,7 @@ import { onBeforeUnmount, onMounted } from 'vue'
 import { RouterView } from 'vue-router'
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
+import DemoModal from './components/DemoModal.vue'
 
 // Fade images in as they finish loading so the first paint isn't a series of
 // abrupt pop-ins. Already-cached images stay visible (no flash on revisits).
@@ -44,6 +45,43 @@ onBeforeUnmount(() => observer?.disconnect())
 
 <template>
   <Navbar />
-  <RouterView />
+  <div class="relative">
+    <RouterView v-slot="{ Component, route }">
+      <Transition name="page">
+        <component :is="Component" :key="route.path" />
+      </Transition>
+    </RouterView>
+  </div>
   <Footer />
+
+  <!-- Single global demo-request modal (opened from Hero, Footer, …) -->
+  <DemoModal />
 </template>
+
+<style>
+/* Page transition: a cross-fade. We stay in the default (simultaneous) mode —
+   NOT mode="out-in", which hangs on the home page's infinite marquee animations.
+   The leaving page is taken out of flow and overlaid so the two pages cross-fade
+   cleanly instead of the old one vanishing abruptly. */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.35s ease;
+}
+.page-leave-active {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active {
+    transition: none;
+  }
+}
+</style>

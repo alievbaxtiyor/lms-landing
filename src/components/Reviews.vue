@@ -83,7 +83,7 @@ function scroll(direction: number) {
       <!-- Review cards -->
       <div
         ref="scroller"
-        class="no-scrollbar edge-fade mt-12 flex items-stretch gap-6 overflow-x-auto pb-2"
+        class="no-scrollbar edge-fade mt-12 flex items-start gap-6 overflow-x-auto pb-2"
       >
         <div
           v-for="(review, i) in reviews"
@@ -93,7 +93,7 @@ function scroll(direction: number) {
           <p class="font-sf text-[16px] font-normal leading-5.5 tracking-[0.02em] text-[#4A4A4A]">
             {{ review.text }}
           </p>
-          <div class="mt-auto flex items-center gap-3">
+          <div class="flex items-center gap-3">
             <img :src="review.avatar" alt="" class="h-9 w-9 shrink-0 object-contain" />
             <div>
               <p class="font-sf text-[14px] font-medium leading-4.5 tracking-[0.02em] text-[#0B0E04]">

@@ -8,8 +8,10 @@ const { t } = useI18n()
 
 const scroller = ref<HTMLElement | null>(null)
 
+// Scroll by whole cards (card width + gap) so slides land aligned, not mid-card.
+const CARD_STEP = 43.25 * 4 + 24 // w-43.25 + gap-6
 function scroll(direction: number) {
-  scroller.value?.scrollBy({ left: direction * 360, behavior: 'smooth' })
+  scroller.value?.scrollBy({ left: direction * CARD_STEP * 3, behavior: 'smooth' })
 }
 </script>
 
@@ -49,12 +51,15 @@ function scroll(direction: number) {
       </div>
 
       <!-- Scrollable cards -> each links to its feature detail page -->
-      <div ref="scroller" class="no-scrollbar edge-fade mt-12 flex gap-6 overflow-x-auto px-12 pb-2">
+      <div
+        ref="scroller"
+        class="no-scrollbar edge-fade mt-12 flex snap-x scroll-smooth gap-6 overflow-x-auto px-12 pb-2"
+      >
         <RouterLink
           v-for="f in features"
           :key="f.slug"
           :to="`/imkoniyatlar/${f.slug}`"
-          class="flex w-43.25 shrink-0 flex-col items-center text-center transition-opacity hover:opacity-80"
+          class="flex w-43.25 shrink-0 snap-start flex-col items-center text-center transition-opacity hover:opacity-80"
         >
           <div class="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#333333] p-4">
             <img :src="f.icon" alt="" class="h-12 w-12" />

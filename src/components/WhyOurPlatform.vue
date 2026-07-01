@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import PhysicsTags from './PhysicsTags.vue'
 import whyusBack from '../assets/images/whyusback.png'
@@ -89,38 +89,46 @@ const proctorCards = computed<ProctorCard[]>(() => [
 ])
 
 const NODE_BG: Record<TreeNode['variant'], string> = {
-  purple: '#D9C7FF',
-  green: '#9FE870',
-  white: '#FFFFFF',
+  purple: 'rgba(230, 194, 255, 0.56)',
+  green: 'rgba(153, 238, 92, 0.56)',
+  white: 'rgba(255, 255, 255, 0.56)',
 }
 
+// "Grow tree" reveal timings (seconds). Sources (Kurs analitikasi, Hisobotlar)
+// pop first, connectors draw outward, then the leaf nodes pop as lines reach them.
+const TREE_NODE_DELAY = [0, 0.08, 0.55, 0.65, 0.75, 0.85]
+const TREE_LINE_DELAY = [0.28, 0.38, 0.48, 0.58]
+
 // Orthogonal rounded "elbow" connector between two points (480×210 space).
-function elbow(x1: number, y1: number, x2: number, y2: number, r = 12): string {
-  const midX = Math.round((x1 + x2) / 2)
+function elbow(x1: number, y1: number, x2: number, y2: number, r = 12, bendX?: number): string {
+  // bendX lets a connector turn upward closer to its target (default: midpoint).
+  const midX = bendX ?? Math.round((x1 + x2) / 2)
   const dirV = y2 > y1 ? 1 : -1
   if (Math.abs(y2 - y1) < 2) return `M ${x1} ${y1} H ${x2}`
   // Clamp the corner radius so short spans don't overshoot / reverse.
-  const rr = Math.min(r, Math.abs(x2 - x1) / 2, Math.abs(y2 - y1) / 2)
+  const rr = Math.min(r, Math.abs(midX - x1), Math.abs(x2 - midX), Math.abs(y2 - y1) / 2)
   return `M ${x1} ${y1} H ${midX - rr} Q ${midX} ${y1} ${midX} ${y1 + dirV * rr} V ${y2 - dirV * rr} Q ${midX} ${y2} ${midX + rr} ${y2} H ${x2}`
 }
 
-// "Analitika va hisobotlar" node tree — two-row layout in a 488×112 space so the
-// pills fit full-size with clear spacing inside the fixed card.
+// "Analitika va hisobotlar" node tree — matches the Figma frame 1:1 (472×145
+// space). Nodes are staggered and every connector fans out from "Hisobotlar"'s
+// right-center (160,88) to each target node's left-center.
 const analyticsTree = computed<{ nodes: TreeNode[]; paths: string[] }>(() => ({
   nodes: [
-    { label: t('why.analyticsTree.courseAnalytics'), x: 0, y: 0, variant: 'purple' },
-    { label: t('why.analyticsTree.reports'), x: 16, y: 62, variant: 'green' },
-    { label: t('why.analyticsTree.student'), x: 210, y: 4, variant: 'white' },
-    { label: t('why.analyticsTree.teacher'), x: 360, y: 4, variant: 'white' },
-    { label: t('why.analyticsTree.survey'), x: 210, y: 66, variant: 'white' },
-    { label: t('why.analyticsTree.attendance'), x: 365, y: 66, variant: 'white' },
+    { label: t('why.analyticsTree.courseAnalytics'), x: 0, y: 12, variant: 'purple' }, // 144×46
+    { label: t('why.analyticsTree.reports'), x: 52, y: 65, variant: 'green' }, // 108×46
+    { label: t('why.analyticsTree.student'), x: 212, y: 0, variant: 'white' }, // 73×42
+    { label: t('why.analyticsTree.teacher'), x: 308, y: 29, variant: 'white' }, // 99×42
+    { label: t('why.analyticsTree.survey'), x: 233, y: 103, variant: 'white' }, // 106×42
+    { label: t('why.analyticsTree.attendance'), x: 383, y: 85, variant: 'white' }, // 89×42
   ] as TreeNode[],
   paths: [
-    elbow(150, 86, 210, 24), // Hisobotlar → Talaba
-    // Hisobotlar → O'qituvchi (routes through the row gap, up to the top row)
-    'M 150 86 H 182 Q 190 86 190 78 V 62 Q 190 54 198 54 H 344 Q 352 54 352 46 V 32 Q 352 24 360 24',
-    // Hisobotlar → passes through So'rovnoma → continues to Davomat
-    'M 150 86 H 365',
+    // Talaba: run right (below Kurs analitikasi) then rise close to Talaba, so
+    // the line clearly belongs to Hisobotlar and not the purple pill above.
+    elbow(160, 88, 212, 21, 12, 200), // Hisobotlar → Talaba
+    elbow(160, 88, 308, 50), // Hisobotlar → O'qituvchi
+    elbow(160, 88, 233, 124), // Hisobotlar → So'rovnoma
+    elbow(160, 88, 383, 106), // Hisobotlar → Davomat
   ],
 }))
 
@@ -157,6 +165,35 @@ const items = computed<Item[]>(() => [
 
 const active = ref(0)
 const current = computed(() => items.value[active.value])
+
+// Sliding active-pill indicator on the selector rail: one pill that animates to
+// the active row's vertical center, instead of a per-row element that teleports.
+const PILL_H = 32
+const listEl = ref<HTMLElement | null>(null)
+const btnEls = ref<HTMLElement[]>([])
+function setBtnRef(el: Element | null, i: number) {
+  if (el) btnEls.value[i] = el as HTMLElement
+}
+const pillY = ref(0)
+const pillReady = ref(false)
+function updatePill() {
+  const btn = btnEls.value[active.value]
+  if (!btn) return
+  pillY.value = btn.offsetTop + btn.offsetHeight / 2
+}
+watch(active, () => nextTick(updatePill))
+let pillRO: ResizeObserver | null = null
+onMounted(() => {
+  nextTick(() => {
+    updatePill()
+    pillReady.value = true
+  })
+  if (typeof ResizeObserver !== 'undefined') {
+    pillRO = new ResizeObserver(() => updatePill())
+    if (listEl.value) pillRO.observe(listEl.value)
+  }
+})
+onUnmounted(() => pillRO?.disconnect())
 
 // Security-expertise steps (second big card). Each step's badge gets a
 // progressively darker green.
@@ -219,37 +256,41 @@ const stats = computed(() => [
       </h2>
 
       <!-- Selector list + info card -->
-      <div class="mt-12 flex max-w-280 flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
-        <!-- Left: list selector -->
-        <div class="relative w-full shrink-0 space-y-1 lg:w-114.25">
+      <div class="mt-12 flex max-w-280 flex-col gap-10 lg:flex-row lg:items-stretch lg:justify-between">
+        <!-- Left: list selector — stretches to the info card's height and spreads
+             its items evenly so the two columns line up top and bottom. -->
+        <div ref="listEl" class="relative flex w-full shrink-0 flex-col gap-2.5 lg:w-114.25">
           <!-- vertical track rail -->
           <div class="absolute top-1 bottom-1 left-2 w-0.5 rounded-full bg-[#F4F4F4]"></div>
+
+          <!-- active indicator: a single green pill that slides to the active row -->
+          <span
+            class="pointer-events-none absolute top-0 left-2 z-10 w-2 rounded-r-lg bg-[#88E24E] ring-[6px] ring-white transition-[transform,opacity] duration-300 ease-out"
+            :class="pillReady ? 'opacity-100' : 'opacity-0'"
+            :style="{ height: PILL_H + 'px', transform: `translateY(${pillY - PILL_H / 2}px)` }"
+          ></span>
 
           <button
             v-for="(item, i) in items"
             :key="i"
+            :ref="(el) => setBtnRef(el as Element | null, i)"
             type="button"
-            class="relative flex w-full items-center text-left"
+            class="relative flex w-full items-stretch text-left lg:flex-1"
             @click="active = i"
           >
-            <!-- active indicator: green pill sitting on the rail, rounded right + white halo -->
-            <span
-              v-if="i === active"
-              class="absolute top-1/2 left-2 z-10 h-6 w-2 -translate-y-1/2 rounded-r-lg bg-[#88E24E] ring-[6px] ring-white"
-            ></span>
             <!-- card (offset right of the rail gutter) -->
             <div
-              class="ml-7 flex flex-1 items-center gap-6 rounded-2xl px-6 py-4 transition-colors"
+              class="ml-7 flex flex-1 items-center gap-4 rounded-2xl px-5 py-4 transition-colors duration-300"
               :class="i === active ? 'bg-[#F4F4F4]' : 'hover:bg-[#F4F4F4]/60'"
             >
               <span
-                class="block h-6 w-6 shrink-0 [&>svg]:block [&>svg]:h-full [&>svg]:w-full"
+                class="block h-7 w-7 shrink-0 transition-colors duration-300 [&>svg]:block [&>svg]:h-full [&>svg]:w-full"
                 :style="{ color: i === active ? '#0B0E04' : '#777777' }"
                 v-html="recolor(item.rowIcon)"
               ></span>
               <span
-                class="font-sf text-[16px] leading-5.5 tracking-[0.02em]"
-                :class="i === active ? 'font-medium text-[#0B0E04]' : 'text-[#777777]'"
+                class="font-sf text-[19px] leading-6.5 tracking-[0.01em] transition-colors duration-300"
+                :class="i === active ? 'font-semibold text-[#0B0E04]' : 'font-medium text-[#777777]'"
               >
                 {{ item.label }}
               </span>
@@ -278,50 +319,53 @@ const stats = computed(() => [
           <!-- body region: fills remaining height, content vertically centered -->
           <div class="flex flex-1 flex-col justify-center gap-6">
             <!-- stat-card body -->
-          <template v-if="current.stats">
+          <div v-if="current.stats" class="flex flex-1 flex-col gap-6">
             <!-- horizontal divider -->
             <div class="h-px w-full bg-[#E8E8E8]"></div>
 
-            <!-- 3 stat cards, 12px gap with a vertical divider in each gap -->
-            <div class="flex items-stretch">
+            <!-- 3 stat cards fill the remaining height; each stat's label/icon/
+                 value are spread evenly so the card doesn't read as empty -->
+            <div class="flex flex-1 items-stretch">
               <template v-for="(stat, i) in current.stats" :key="i">
                 <div v-if="i > 0" class="mx-1.5 w-px self-stretch bg-[#E8E8E8]"></div>
-                <div class="flex flex-1 flex-col items-center gap-2 rounded-[20px] text-center">
+                <div class="flex flex-1 flex-col items-center justify-evenly gap-3 rounded-[20px] py-1 text-center">
                   <span
                     class="font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#4A4A4A]"
                   >
                     {{ stat.label }}
                   </span>
                   <span
-                    class="h-7 w-7 [&>svg]:block [&>svg]:h-full [&>svg]:w-full"
+                    class="h-9 w-9 [&>svg]:block [&>svg]:h-full [&>svg]:w-full"
                     :style="{ color: stat.color }"
                     v-html="recolor(stat.icon)"
                   ></span>
                   <span
-                    class="font-sf text-[16px] font-semibold leading-5.5 tracking-[0.02em] text-[#333333]"
+                    class="block min-h-12 font-sf text-[18px] font-semibold leading-6 tracking-[0.02em] text-[#333333]"
                   >
                     {{ stat.value }}
                   </span>
                 </div>
               </template>
             </div>
-          </template>
+          </div>
 
           <!-- tag-cloud body (Matter.js physics drop animation) -->
           <PhysicsTags v-else-if="current.tags" :tags="current.tags" />
 
-          <!-- white pill cards body (row 1: 2 cards, row 2: the rest) -->
+          <!-- white pill cards body (row 1: 2 cards, row 2: the rest). Rows sit
+               together as a centered group (a comfortable row gap, not spread to
+               the card edges). -->
           <div
             v-else-if="current.cards"
-            class="flex flex-wrap items-center justify-start gap-2"
+            class="flex flex-1 flex-wrap content-center items-center justify-start gap-x-2 gap-y-4"
           >
             <template v-for="(card, i) in current.cards" :key="i">
               <span
-                class="inline-flex items-center gap-2 rounded-[30px] bg-white px-4 py-2"
+                class="inline-flex items-center gap-2 rounded-[30px] bg-white px-4 py-3.5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
               >
-                <img :src="card.icon" alt="" class="h-6 w-6" />
+                <img :src="card.icon" alt="" class="h-7 w-7" />
                 <span
-                  class="font-sf text-[16px] font-semibold leading-5.5 tracking-[0.02em] text-[#333333]"
+                  class="font-sf text-[18px] font-semibold leading-6.5 tracking-[0.02em] text-[#333333]"
                 >
                   {{ card.label }}
                 </span>
@@ -330,11 +374,12 @@ const stats = computed(() => [
             </template>
           </div>
 
-          <!-- node-tree body (analitika) -->
-          <div v-else-if="current.tree" class="relative mx-auto h-28 w-122 max-w-full">
-            <!-- connector lines -->
+          <!-- node-tree body (analitika) — 1:1 with the Figma frame; grows in
+               with a staggered "tree" reveal each time it's selected. -->
+          <div v-else-if="current.tree" class="relative mx-auto h-[145px] w-[472px] max-w-full">
+            <!-- connector lines (draw outward from Hisobotlar) -->
             <svg
-              viewBox="0 0 488 112"
+              viewBox="0 0 472 145"
               preserveAspectRatio="none"
               class="absolute inset-0 h-full w-full overflow-visible"
             >
@@ -342,9 +387,12 @@ const stats = computed(() => [
                 v-for="(d, i) in current.tree.paths"
                 :key="i"
                 :d="d"
+                pathLength="1"
                 fill="none"
-                stroke="#D6D6D6"
-                stroke-width="1.5"
+                stroke="#D2D2D2"
+                stroke-width="1"
+                class="tree-line"
+                :style="{ animationDelay: TREE_LINE_DELAY[i] + 's' }"
               />
             </svg>
 
@@ -352,13 +400,13 @@ const stats = computed(() => [
             <div
               v-for="(node, i) in current.tree.nodes"
               :key="i"
-              class="absolute rounded-full font-sf font-semibold whitespace-nowrap text-[#1A1A1A]"
+              class="tree-node absolute whitespace-nowrap px-4 py-3 font-sf tracking-[0.02em] text-[#0B0E04]"
               :class="
                 node.variant === 'white'
-                  ? 'px-6 py-2.75 text-[15px] font-medium shadow-[0_1px_3px_rgba(0,0,0,0.05)]'
-                  : 'px-7 py-3.25 text-[17px]'
+                  ? 'rounded-[32px] text-[14px] font-normal leading-[18px]'
+                  : 'rounded-3xl text-[16px] font-medium leading-[22px]'
               "
-              :style="{ left: node.x + 'px', top: node.y + 'px', backgroundColor: NODE_BG[node.variant] }"
+              :style="{ left: node.x + 'px', top: node.y + 'px', backgroundColor: NODE_BG[node.variant], animationDelay: TREE_NODE_DELAY[i] + 's' }"
             >
               {{ node.label }}
             </div>
@@ -383,6 +431,11 @@ const stats = computed(() => [
           class="absolute rounded-xl shadow-lg"
           style="top: 40px; left: 112px; width: 600px; height: 438px"
         />
+        <!-- soft blur shadow behind the front dashboard (Figma: Rectangle 1902) -->
+        <div
+          class="absolute"
+          style="top: 177px; left: 135px; width: 463px; height: 375px; background: #333333; opacity: 0.2; filter: blur(40px)"
+        ></div>
         <!-- green frame around the front dashboard -->
         <div
           class="absolute rounded-[18px] border-2 border-[#71DD2B]"
@@ -392,7 +445,7 @@ const stats = computed(() => [
         <img
           :src="whyusOn"
           alt=""
-          class="absolute rounded-xl shadow-2xl"
+          class="absolute rounded-xl"
           style="top: 177px; left: -37px; width: 600px; height: 428px"
         />
 
@@ -401,13 +454,13 @@ const stats = computed(() => [
           <div
             v-for="(s, i) in stats"
             :key="i"
-            class="flex h-36 flex-col justify-center gap-2 rounded-2xl bg-[#E7F9DBB2] p-4"
+            class="flex h-29.5 flex-col justify-start gap-2 rounded-2xl bg-[#E7F9DBB2] p-4"
             :class="{ 'col-span-2': s.wide }"
           >
             <span class="font-sf text-[48px] font-medium leading-14 tracking-[0.01em] text-[#0B0E04]">
               {{ s.value }}
             </span>
-            <span class="font-sf text-[16px] font-normal leading-5.5 tracking-[0.02em] text-[#3D7D14]">
+            <span class="font-sf text-[14px] font-normal leading-5.5 tracking-[0.02em] text-[#3D7D14]">
               {{ s.label }}
             </span>
           </div>
@@ -549,5 +602,42 @@ const stats = computed(() => [
 .why-swap-leave-to {
   opacity: 0;
   transform: translateY(-6px);
+}
+
+/* "Grow tree" reveal for the analytics selector card: connectors draw outward
+   from Hisobotlar while nodes pop in, staggered (see TREE_*_DELAY). */
+.tree-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: tree-draw 0.55s ease-out forwards;
+}
+@keyframes tree-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.tree-node {
+  opacity: 0;
+  animation: tree-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes tree-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tree-line {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .tree-node {
+    animation: none;
+    opacity: 1;
+  }
 }
 </style>

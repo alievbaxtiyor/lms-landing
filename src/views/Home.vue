@@ -13,15 +13,18 @@ const sharedBg = 'radial-gradient(96.97% 32.16% at 50% 100%, #9FE870 0%, #FFFFFF
 </script>
 
 <template>
-  <Hero />
-  <Features />
-  <Introduction />
+  <!-- Single root element so the route <Transition> can track enter/leave. -->
+  <div>
+    <Hero />
+    <Features />
+    <Introduction />
 
-  <div :style="{ background: sharedBg }">
-    <Integrations />
-    <WhyOurPlatform />
-    <Reviews />
-    <Faq />
-    <Mobile />
+    <div :style="{ background: sharedBg }">
+      <Integrations />
+      <WhyOurPlatform />
+      <Reviews />
+      <Faq />
+      <Mobile />
+    </div>
   </div>
 </template>

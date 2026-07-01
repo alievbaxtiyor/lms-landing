@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Smooth in-page navigation for anchor/hash links (footer, navbar). */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 /* SF UI Display */
 @font-face {
   font-family: "SF UI Display";

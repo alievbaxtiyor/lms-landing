@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useDemoModal } from '../composables/useDemoModal'
 import logoMark from '../assets/logos/logo.svg'
 import logoWordmark from '../assets/logos/lms.uz.svg'
 import instagramIcon from '../assets/icons/instagram.svg'
@@ -9,6 +10,7 @@ import facebookIcon from '../assets/icons/facebook.svg'
 import youtubeIcon from '../assets/icons/youtube.svg'
 
 const { t } = useI18n()
+const { openDemoModal } = useDemoModal()
 
 interface FooterLink {
   label: string
@@ -31,11 +33,12 @@ const imkoniyatlar = computed<FooterLink[]>(() => [
 const phone = computed(() => t('common.phone'))
 const email = computed(() => t('common.email'))
 
+// Only Telegram is live for now; the rest are shown but disabled.
 const socials = [
-  { label: 'Instagram', href: '#', icon: instagramIcon },
-  { label: 'Telegram', href: '#', icon: telegramIcon },
-  { label: 'Facebook', href: '#', icon: facebookIcon },
-  { label: 'YouTube', href: '#', icon: youtubeIcon },
+  { label: 'Telegram', href: 'https://t.me/lms_rasmiy', icon: telegramIcon, disabled: false },
+  { label: 'Instagram', href: '', icon: instagramIcon, disabled: true },
+  { label: 'Facebook', href: '', icon: facebookIcon, disabled: true },
+  { label: 'YouTube', href: '', icon: youtubeIcon, disabled: true },
 ]
 </script>
 
@@ -74,9 +77,10 @@ const socials = [
           {{ $t('footer.ctaDesc') }}
         </p>
 
-        <a
-          href="#demo"
+        <button
+          type="button"
           class="mt-8 inline-flex h-12.5 w-58.5 items-center justify-center gap-2 rounded-[100px] bg-[#9FE870] px-6 py-3.5 font-sf text-[16px] font-medium text-black shadow-[0px_8px_48px_0px_#9FE8704D] transition-colors hover:bg-[#aef07e]"
+          @click="openDemoModal"
         >
           {{ $t('common.demo') }}
           <svg
@@ -91,7 +95,7 @@ const socials = [
           >
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
-        </a>
+        </button>
       </div>
 
       <!-- Logo + link columns -->
@@ -162,17 +166,28 @@ const socials = [
               {{ email }}
             </a>
 
-            <!-- Social icons -->
+            <!-- Social icons — only enabled ones link out; the rest are disabled -->
             <div class="flex items-center gap-4">
-              <a
-                v-for="social in socials"
-                :key="social.label"
-                :href="social.href"
-                :aria-label="social.label"
-                class="inline-flex transition-opacity hover:opacity-80"
-              >
-                <img :src="social.icon" :alt="social.label" class="h-5 w-5" />
-              </a>
+              <template v-for="social in socials" :key="social.label">
+                <a
+                  v-if="!social.disabled"
+                  :href="social.href"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :aria-label="social.label"
+                  class="inline-flex transition-opacity hover:opacity-80"
+                >
+                  <img :src="social.icon" :alt="social.label" class="h-5 w-5" />
+                </a>
+                <span
+                  v-else
+                  :aria-label="social.label"
+                  aria-disabled="true"
+                  class="inline-flex cursor-not-allowed opacity-40"
+                >
+                  <img :src="social.icon" :alt="social.label" class="h-5 w-5" />
+                </span>
+              </template>
             </div>
           </div>
         </div>

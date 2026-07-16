@@ -12,11 +12,25 @@ const { t } = useI18n()
 
 const bg = 'radial-gradient(195.63% 106.74% at 50% -6.74%, #9FE870 0%, #FFFFFF 100%)'
 
-// Exactly two videos.
-const slides = [video1, video2]
-const STEP = 741 + 24 // card width (w-185.25) + gap (gap-6)
+// Exactly two videos (introdaction2 shown first, introdaction1 second).
+const slides = [video2, video1]
 
 const activeIndex = ref(0)
+
+// Coverflow placement: the active video sits centred at full size; the other is
+// pushed to its side (right if it comes after the active one, left if before),
+// shrunk and dimmed. Switching just re-runs this and the CSS transition on
+// .cf-card slides + scales each card smoothly between the two states.
+const SIDE_SCALE = 0.8
+const SIDE_SHIFT = 920 // px each non-active card is pushed to its side
+function cardStyle(idx: number) {
+  const offset = idx - activeIndex.value
+  const active = offset === 0
+  return {
+    transform: `translate(-50%, -50%) translateX(${offset * SIDE_SHIFT}px) scale(${active ? 1 : SIDE_SCALE})`,
+    opacity: active ? '1' : '0.5',
+  }
+}
 
 // Each card keeps its own persistent <video> element.
 const videoEls = ref<(HTMLVideoElement | null)[]>([])
@@ -85,7 +99,7 @@ function toggleFullscreen() {
 </script>
 
 <template>
-  <section class="text-[#0B0E04]" :style="{ background: bg }">
+  <section class="overflow-x-clip text-[#0B0E04]" :style="{ background: bg }">
     <div class="mx-auto max-w-296 px-8 py-20">
       <!-- Header: title + description (left), slider buttons (right) -->
       <div class="flex items-end justify-between gap-6">
@@ -122,35 +136,39 @@ function toggleFullscreen() {
         </div>
       </div>
 
-      <!-- Video slider (two videos) -->
-      <div class="fade-right mt-12 mr-[calc(50%-50vw)] overflow-hidden">
+      <!-- Video coverflow (two videos): the active one sits centred at full
+           size; the other is smaller, dimmer and peeks from its side. Switching
+           slides the active card off to the left and brings the other in from
+           the right (and vice-versa) via the .cf-card transition. -->
+      <div class="cf-stage relative left-1/2 mt-12 h-154 w-screen -translate-x-1/2 overflow-hidden">
         <div
-          class="flex gap-6 pb-2 transition-transform duration-500 ease-out"
-          :style="{ transform: `translateX(-${activeIndex * STEP}px)` }"
+          v-for="(src, idx) in slides"
+          :key="idx"
+          class="cf-card absolute left-1/2 top-1/2 h-154 w-268"
+          :class="idx === activeIndex ? 'z-20' : 'z-10'"
+          :style="cardStyle(idx)"
         >
-          <div v-for="(src, idx) in slides" :key="idx" class="h-106.5 w-185.25 shrink-0">
-            <!-- Same frame for every card (border just turns green when active),
-                 so the shape never changes while sliding. -->
-            <div
-              class="h-full w-full rounded-[28px] border-[3px] p-2.25"
-              :class="idx === activeIndex ? 'border-[#9FE870]' : 'border-transparent'"
-            >
-              <div class="relative h-full w-full overflow-hidden rounded-[20px] bg-black">
-                <video
-                  :ref="(el) => setVideoRef(idx, el)"
-                  :src="src"
-                  class="h-full w-full object-cover transition-opacity"
-                  :class="{ 'opacity-60': idx !== activeIndex }"
-                  playsinline
-                  preload="metadata"
-                  @loadedmetadata="showPoster"
-                  @timeupdate="onTimeUpdate"
-                  @play="isPlaying = true"
-                  @pause="isPlaying = false"
-                  @click="idx === activeIndex ? togglePlay() : goTo(idx)"
-                ></video>
+          <!-- Same frame for every card (border just turns green when active),
+               so the shape never changes while sliding. -->
+          <div
+            class="h-full w-full rounded-[28px] border-[3px] p-2.25 transition-colors duration-500"
+            :class="idx === activeIndex ? 'border-[#9FE870]' : 'border-transparent'"
+          >
+            <div class="relative h-full w-full overflow-hidden rounded-[20px] bg-black">
+              <video
+                :ref="(el) => setVideoRef(idx, el)"
+                :src="src"
+                class="h-full w-full cursor-pointer object-cover"
+                playsinline
+                preload="metadata"
+                @loadedmetadata="showPoster"
+                @timeupdate="onTimeUpdate"
+                @play="isPlaying = true"
+                @pause="isPlaying = false"
+                @click="idx === activeIndex ? togglePlay() : goTo(idx)"
+              ></video>
 
-                <!-- Controls (active card only): two pills, 12px inset -->
+              <!-- Controls (active card only): two pills, 12px inset -->
                 <div
                   v-if="idx === activeIndex"
                   class="absolute inset-x-3 bottom-3 flex items-center justify-between"
@@ -204,7 +222,6 @@ function toggleFullscreen() {
                     </button>
                   </div>
                 </div>
-              </div>
             </div>
           </div>
         </div>
@@ -214,9 +231,16 @@ function toggleFullscreen() {
 </template>
 
 <style scoped>
-/* Fade only the right (bleed) end of the slider. */
-.fade-right {
-  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 140px), transparent 100%);
-          mask-image: linear-gradient(to right, #000 calc(100% - 140px), transparent 100%);
+/* Each video card eases between its centred and off-to-the-side states. */
+.cf-card {
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.55s ease;
+  will-change: transform, opacity;
+}
+/* Soften both bleed edges so the peeking side video melts into the section. */
+.cf-stage {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
 }
 </style>

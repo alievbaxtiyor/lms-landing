@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import { features } from '../data/features'
@@ -8,15 +8,56 @@ const { t } = useI18n()
 
 const scroller = ref<HTMLElement | null>(null)
 
-// Scroll by whole cards (card width + gap) so slides land aligned, not mid-card.
+// Scroll by whole cards (card width + gap) so a card always lands centred.
 const CARD_STEP = 43.25 * 4 + 24 // w-43.25 + gap-6
 function scroll(direction: number) {
   scroller.value?.scrollBy({ left: direction * CARD_STEP * 3, behavior: 'smooth' })
 }
+
+// Coverflow effect: cards in the middle stay full-size and sharp; they shrink
+// and fade as they slide toward either edge, dissolving into the blurred
+// gutters. `edge` (the plateau boundary) is capped at the first card's resting
+// centre, so at rest card #1 sits at the container-start line at FULL size —
+// only once scrolled do the leading cards drop away to the left. Recomputed
+// every animation frame while the row scrolls, so the scale tracks the slide.
+let raf = 0
+function paint() {
+  raf = 0
+  const el = scroller.value
+  if (!el || !el.children.length) return
+  const W = el.clientWidth || 1
+  const first = el.children[0] as HTMLElement
+  const edge = Math.min(W * 0.18, first.offsetLeft + first.offsetWidth / 2)
+  const sl = el.scrollLeft
+  for (const card of Array.from(el.children) as HTMLElement[]) {
+    const pos = card.offsetLeft + card.offsetWidth / 2 - sl // card centre, in viewport px
+    let f = 1
+    if (pos < edge) f = pos / edge
+    else if (pos > W - edge) f = (W - pos) / edge
+    f = f < 0 ? 0 : f > 1 ? 1 : f
+    const e = (1 - f) * (1 - f) // ease-in: full across the middle, dropping off near the edges
+    card.style.transform = `scale(${(1 - 0.45 * e).toFixed(3)})`
+    card.style.opacity = (1 - 0.78 * e).toFixed(3)
+  }
+}
+function onScroll() {
+  if (!raf) raf = requestAnimationFrame(paint)
+}
+
+onMounted(() => {
+  paint()
+  scroller.value?.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', onScroll)
+})
+onBeforeUnmount(() => {
+  scroller.value?.removeEventListener('scroll', onScroll)
+  window.removeEventListener('resize', onScroll)
+  if (raf) cancelAnimationFrame(raf)
+})
 </script>
 
 <template>
-  <section id="imkoniyatlar" class="bg-black text-white">
+  <section id="imkoniyatlar" class="overflow-x-clip bg-black text-white">
     <div class="mx-auto max-w-296 px-8 py-20">
       <!-- Header: title + carousel arrows -->
       <div class="flex items-end justify-between gap-6">
@@ -50,16 +91,19 @@ function scroll(direction: number) {
         </div>
       </div>
 
-      <!-- Scrollable cards -> each links to its feature detail page -->
+      <!-- Scrollable cards -> each links to its feature detail page.
+           Full-bleed width for room. Left padding lines the FIRST card up with
+           the title/container start; right padding is half the viewport (minus
+           half a card) so the LAST card can still be scrolled to the centre. -->
       <div
         ref="scroller"
-        class="no-scrollbar edge-fade mt-12 flex snap-x scroll-smooth gap-6 overflow-x-auto px-12 pb-2"
+        class="no-scrollbar edge-fade relative left-1/2 mt-12 flex w-screen -translate-x-1/2 scroll-smooth gap-6 overflow-x-auto pb-6 pl-[max(2rem,calc((100vw-74rem)/2+2rem))] pr-[calc(50vw-86.5px)]"
       >
         <RouterLink
           v-for="f in features"
           :key="f.slug"
           :to="`/imkoniyatlar/${f.slug}`"
-          class="flex w-43.25 shrink-0 snap-start flex-col items-center text-center transition-opacity hover:opacity-80"
+          class="flex w-43.25 shrink-0 origin-center flex-col items-center text-center will-change-transform"
         >
           <div class="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#333333] p-4">
             <img :src="f.icon" alt="" class="h-12 w-12" />
@@ -82,22 +126,23 @@ function scroll(direction: number) {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
-/* Fade the start/end edges of the scroll row (like the partners marquee).
-   Fixed 40px stops align with the row's px-12 (48px) gutter so the first/last
-   cards stay fully readable at rest and only fade once scrolled. */
+/* The coverflow's per-card scale + opacity does the heavy fading; this mask
+   only dissolves the last sliver at each edge. Kept to a small 28px inset —
+   inside even the tightest gutter — so it never touches the first card's label
+   when it rests on the container-start line. */
 .edge-fade {
   -webkit-mask-image: linear-gradient(
     to right,
     transparent 0,
-    #000 40px,
-    #000 calc(100% - 40px),
+    #000 28px,
+    #000 calc(100% - 28px),
     transparent 100%
   );
   mask-image: linear-gradient(
     to right,
     transparent 0,
-    #000 40px,
-    #000 calc(100% - 40px),
+    #000 28px,
+    #000 calc(100% - 28px),
     transparent 100%
   );
 }

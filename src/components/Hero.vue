@@ -51,13 +51,63 @@ interface Partner {
   key: string
   name: string
   url: string
+  // Logos whose artwork already spells out the university name — shown without a
+  // separate text label.
+  labelInLogo: boolean
+  // Dark logos we recolour to solid white so they read on the black background.
+  white: boolean
+  // Tailwind size + object-fit classes for the logo <img> (a few need a bespoke
+  // size — see SIZE_OVERRIDE).
+  logoClass: string
+}
+
+// Universities intentionally kept out of the logo marquee (their file may still
+// be used elsewhere, e.g. AIFU as a review avatar, so we filter — not delete).
+const EXCLUDE = new Set(['AIFU']) // Aniq va ijtimoiy fanlar universiteti
+
+// Logos whose artwork already includes the university name — we hide the text
+// label for these (the rest keep their label beside the logo).
+const LABEL_IN_LOGO = new Set([
+  'YANGI_ASR', // Yangi Asr Universiteti
+  'IPU', // Iqtisodiyot va pedagogika universiteti
+  'TERSU', // Termiz davlat universiteti
+  'BFA', // Bank-moliya akademiyasi
+  'CSU', // Cyber university
+  'TIIAME', // Toshkent irrigatsiya ... Milliy tadqiqot universiteti
+  'TIME', // Toshkent menedjment va iqtisodiyot instituti
+])
+
+// Dark (navy) logos recoloured to solid white so they show on the black band.
+const WHITE_LOGO = new Set([
+  'FDU', // Fargʻona davlat universiteti
+  'IPU', // Iqtisodiyot va pedagogika universiteti
+  'DSBA', // Davlat siyosati va boshqaruvi akademiyasi
+  'KUAF', // Qo'qon universiteti Andijon filiali
+  'BFA', // Bank-moliya akademiyasi
+])
+
+// Per-logo size/fit overrides. KUAF's badge lives in a very wide SVG canvas, so
+// a square contain-fit shrinks it to a sliver — cover-crop the empty sides so
+// the badge fills the box like the rest.
+const SIZE_OVERRIDE: Record<string, string> = {
+  KUAF: 'h-20 w-20 object-cover',
 }
 
 const partners: Partner[] = Object.entries(logoModules)
   .map(([path, url]) => {
     const key = (path.split('/').pop() ?? '').replace(/\.[^.]+$/, '')
-    return { key, name: NAMES[key] ?? key, url }
+    return {
+      key,
+      name: NAMES[key] ?? key,
+      url,
+      labelInLogo: LABEL_IN_LOGO.has(key),
+      white: WHITE_LOGO.has(key),
+      logoClass:
+        SIZE_OVERRIDE[key] ??
+        (LABEL_IN_LOGO.has(key) ? 'h-14 w-auto object-contain' : 'h-18 w-18 object-contain'),
+    }
   })
+  .filter((p) => !EXCLUDE.has(p.key))
   .sort((a, b) => a.key.localeCompare(b.key))
 
 // First marquee row (scrolls right -> left), second row (left -> right).
@@ -202,10 +252,16 @@ const rowTwo = partners.slice(14)
             <div
               v-for="(p, i) in [...rowOne, ...rowOne]"
               :key="`r1-${i}-${p.key}`"
-              class="mr-4 flex shrink-0 items-center gap-3"
+              class="mr-10 flex shrink-0 items-center gap-3"
             >
-              <img :src="p.url" :alt="p.name" class="h-14 w-14 shrink-0 object-contain" />
+              <img
+                :src="p.url"
+                :alt="p.name"
+                class="shrink-0"
+                :class="[p.logoClass, { 'brightness-0 invert': p.white }]"
+              />
               <span
+                v-if="!p.labelInLogo"
                 class="max-w-50 font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#D2D2D2]"
                 >{{
                 p.name
@@ -220,10 +276,16 @@ const rowTwo = partners.slice(14)
             <div
               v-for="(p, i) in [...rowTwo, ...rowTwo]"
               :key="`r2-${i}-${p.key}`"
-              class="mr-4 flex shrink-0 items-center gap-3"
+              class="mr-10 flex shrink-0 items-center gap-3"
             >
-              <img :src="p.url" :alt="p.name" class="h-14 w-14 shrink-0 object-contain" />
+              <img
+                :src="p.url"
+                :alt="p.name"
+                class="shrink-0"
+                :class="[p.logoClass, { 'brightness-0 invert': p.white }]"
+              />
               <span
+                v-if="!p.labelInLogo"
                 class="max-w-50 font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#D2D2D2]"
                 >{{
                 p.name

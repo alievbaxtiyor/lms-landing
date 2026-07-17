@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import leftIcon from '../assets/icons/left.svg'
 import rightIcon from '../assets/icons/right.svg'
-import muteIcon from '../assets/icons/mute.svg'
 import expandIcon from '../assets/icons/expand.svg'
 import video1 from '../assets/videos/introdaction1.mp4'
 import video2 from '../assets/videos/introdaction2.mp4'
@@ -87,6 +86,17 @@ function toggleMute() {
   v.muted = !v.muted
   isMuted.value = v.muted
 }
+
+// Pause the active video as soon as the user scrolls the page while it plays.
+// The listener only exists while something is playing, and @pause tears it down.
+function pauseOnScroll() {
+  videoEl.value?.pause()
+}
+watch(isPlaying, (playing) => {
+  if (playing) window.addEventListener('scroll', pauseOnScroll, { passive: true })
+  else window.removeEventListener('scroll', pauseOnScroll)
+})
+onBeforeUnmount(() => window.removeEventListener('scroll', pauseOnScroll))
 function seek(e: MouseEvent) {
   const v = videoEl.value
   if (!v || !v.duration) return
@@ -206,11 +216,38 @@ function toggleFullscreen() {
                     <button
                       type="button"
                       :aria-label="$t('introduction.mute')"
-                      class="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] backdrop-blur transition-colors hover:bg-[#0B0E04]"
-                      :class="{ 'opacity-50': isMuted }"
+                      class="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] text-white backdrop-blur transition-colors hover:bg-[#0B0E04]"
                       @click="toggleMute"
                     >
-                      <img :src="muteIcon" alt="" class="h-5 w-5" />
+                      <!-- Muted: speaker with an X. Unmuted: speaker with waves. -->
+                      <svg
+                        v-if="isMuted"
+                        class="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M18.333 7.5 13.333 12.5M13.333 7.5 18.333 12.5" />
+                        <path d="M8.028 3.638 5.39 6.276c-.144.144-.216.216-.3.268a.83.83 0 0 1-.241.104c-.096.023-.198.023-.402.023H3a1.51 1.51 0 0 0-.878.09.83.83 0 0 0-.365.365c-.09.178-.09.411-.09.878v4c0 .467 0 .7.09.878.08.157.208.285.365.365.178.09.411.09.878.09h1.448c.204 0 .306 0 .402.023a.83.83 0 0 1 .241.104c.084.052.156.124.3.268l2.638 2.638c.357.357.535.535.689.547a.42.42 0 0 0 .35-.145c.099-.117.099-.369.099-.874V4.109c0-.505 0-.757-.1-.874a.42.42 0 0 0-.349-.145c-.154.012-.332.19-.69.548Z" />
+                      </svg>
+                      <svg
+                        v-else
+                        class="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M14.167 6.667a4.17 4.17 0 0 1 0 6.666M16.583 4.583a7.5 7.5 0 0 1 0 10.834" />
+                        <path d="M8.028 3.638 5.39 6.276c-.144.144-.216.216-.3.268a.83.83 0 0 1-.241.104c-.096.023-.198.023-.402.023H3a1.51 1.51 0 0 0-.878.09.83.83 0 0 0-.365.365c-.09.178-.09.411-.09.878v4c0 .467 0 .7.09.878.08.157.208.285.365.365.178.09.411.09.878.09h1.448c.204 0 .306 0 .402.023a.83.83 0 0 1 .241.104c.084.052.156.124.3.268l2.638 2.638c.357.357.535.535.689.547a.42.42 0 0 0 .35-.145c.099-.117.099-.369.099-.874V4.109c0-.505 0-.757-.1-.874a.42.42 0 0 0-.349-.145c-.154.012-.332.19-.69.548Z" />
+                      </svg>
                     </button>
                     <button
                       type="button"

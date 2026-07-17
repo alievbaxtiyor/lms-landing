@@ -36,8 +36,8 @@ const email = computed(() => t('common.email'))
 // Only Telegram is live for now; the rest are shown but disabled.
 const socials = [
   { label: 'Telegram', href: 'https://t.me/lms_rasmiy', icon: telegramIcon, disabled: false },
-  { label: 'Instagram', href: '', icon: instagramIcon, disabled: true },
-  { label: 'Facebook', href: '', icon: facebookIcon, disabled: true },
+  { label: 'Instagram', href: 'https://www.instagram.com/lms.uzb', icon: instagramIcon, disabled: false },
+  { label: 'Facebook', href: 'https://www.facebook.com/share/1ErSfsqZv3/?mibextid=wwXIfr', icon: facebookIcon, disabled: false },
   { label: 'YouTube', href: '', icon: youtubeIcon, disabled: true },
 ]
 </script>

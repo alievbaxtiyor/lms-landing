@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import { setLocale, type Locale } from '../i18n'
@@ -31,6 +31,7 @@ const languages: { code: Locale; label: string }[] = [
 
 const isLangOpen = ref(false)
 const isOpen = ref(false)
+const langWrap = ref<HTMLElement | null>(null)
 
 const currentLangLabel = computed(
   () => languages.find((l) => l.code === locale.value)?.label ?? "O'zb",
@@ -41,6 +42,33 @@ function selectLang(code: Locale) {
   setLocale(code)
   isLangOpen.value = false
 }
+
+// Close the dropdown on any scroll or on a click/tap outside of it, so it never
+// stays stuck open after the user scrolls away and comes back.
+function onOutsideInteract(e: Event) {
+  if (e.type === 'scroll') {
+    isLangOpen.value = false
+    return
+  }
+  if (langWrap.value && !langWrap.value.contains(e.target as Node)) {
+    isLangOpen.value = false
+  }
+}
+
+watch(isLangOpen, (open) => {
+  if (open) {
+    window.addEventListener('scroll', onOutsideInteract, true)
+    document.addEventListener('click', onOutsideInteract, true)
+  } else {
+    window.removeEventListener('scroll', onOutsideInteract, true)
+    document.removeEventListener('click', onOutsideInteract, true)
+  }
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', onOutsideInteract, true)
+  document.removeEventListener('click', onOutsideInteract, true)
+})
 </script>
 
 <template>
@@ -67,7 +95,7 @@ function selectLang(code: Locale) {
 
       <!-- Right: language switcher + phone -->
       <div class="hidden items-center gap-6 md:flex">
-        <div class="relative">
+        <div ref="langWrap" class="relative">
           <button
             type="button"
             class="flex items-center gap-1.5 font-sf text-[16px] font-normal text-[#E8E8E8] transition-colors hover:text-white"

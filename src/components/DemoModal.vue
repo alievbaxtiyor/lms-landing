@@ -17,9 +17,22 @@ const submitLabel = computed(() =>
 const inputClass =
   'w-full rounded-full border border-[#4A4A4A] bg-[#333333] px-4 py-3.5 font-sf text-[14px] font-medium leading-4.5 tracking-[0.02em] text-white outline-none transition-colors placeholder:text-[#777777] focus:bg-[#4A4A4A]'
 
-// Reset to a clean state each time the modal opens.
+// Any scroll gesture dismisses the modal (its Transition plays the leave anim).
+function closeOnScroll() {
+  closeDemoModal()
+}
+
+// Reset to a clean state each time the modal opens, and wire up the
+// scroll-to-close listeners only while the modal is actually visible.
 watch(showModal, (open) => {
-  if (open) status.value = 'idle'
+  if (open) {
+    status.value = 'idle'
+    window.addEventListener('wheel', closeOnScroll, { passive: true })
+    window.addEventListener('touchmove', closeOnScroll, { passive: true })
+  } else {
+    window.removeEventListener('wheel', closeOnScroll)
+    window.removeEventListener('touchmove', closeOnScroll)
+  }
 })
 
 // Formats the phone field as a +998 XX XXX XX XX mask while typing.
@@ -89,7 +102,11 @@ function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') closeDemoModal()
 }
 onMounted(() => window.addEventListener('keydown', onKeydown))
-onUnmounted(() => window.removeEventListener('keydown', onKeydown))
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKeydown)
+  window.removeEventListener('wheel', closeOnScroll)
+  window.removeEventListener('touchmove', closeOnScroll)
+})
 </script>
 
 <template>

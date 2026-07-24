@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import mobileImg from '../assets/images/mobile.png'
 import user1 from '../assets/images/user1.png'
 import user2 from '../assets/images/user2.png'
@@ -10,15 +11,45 @@ import starIcon from '../assets/icons/mobile-star.svg'
 import bookIcon from '../assets/icons/book.svg'
 
 const badge = 'rounded-full bg-[#FFFFFFA3] shadow-[0_6px_24px_rgba(0,0,0,0.10)] backdrop-blur-sm'
+
+// The phone mockup + its floating badges are laid out in a fixed 757×846 px box.
+// Below lg we scale the whole box down to fit the column width so it can still be
+// shown on mobile (instead of being hidden) without overflowing.
+const PHONE_W = 757
+const PHONE_H = 846
+const viewport = ref(typeof window !== 'undefined' ? window.innerWidth : 1280)
+function onResize() {
+  viewport.value = window.innerWidth
+}
+onMounted(() => window.addEventListener('resize', onResize))
+onBeforeUnmount(() => window.removeEventListener('resize', onResize))
+
+const phoneScale = computed(() => {
+  if (viewport.value >= 1024) return 1 // lg+: native size (row layout)
+  // Keep it a tidy, centered element on mobile/tablet — cap the width so it never
+  // grows to dominate the section or let the arm bleed to the edge.
+  const avail = Math.min(viewport.value - 40, 360)
+  return Math.min(1, avail / PHONE_W)
+})
+const phoneBoxStyle = computed(() => ({
+  width: PHONE_W * phoneScale.value + 'px',
+  height: PHONE_H * phoneScale.value + 'px',
+}))
+const phoneInnerStyle = computed(() => ({
+  width: PHONE_W + 'px',
+  height: PHONE_H + 'px',
+  transform: `scale(${phoneScale.value})`,
+  transformOrigin: 'top left',
+}))
 </script>
 
 <template>
   <section class="overflow-x-clip text-[#0B0E04]">
-    <div class="mx-auto max-w-296 px-8 py-20">
+    <div class="mx-auto max-w-296 px-5 md:px-8 py-14 md:py-20">
       <div class="flex flex-col gap-12 lg:flex-row lg:gap-8">
         <!-- Left column -->
         <div class="w-full shrink-0 lg:max-w-138">
-          <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
+          <h2 class="font-sf text-[28px] leading-9 sm:text-[38px] sm:leading-11 md:text-[48px] md:leading-14 font-semibold tracking-[0.01em] text-[#0B0E04]">
             {{ $t('mobile.title') }}
           </h2>
           <p class="mt-4 font-sf text-[16px] font-normal leading-5.5 tracking-[0.02em] text-[#333333]">
@@ -93,9 +124,11 @@ const badge = 'rounded-full bg-[#FFFFFFA3] shadow-[0_6px_24px_rgba(0,0,0,0.10)] 
           </div>
         </div>
 
-        <!-- Phone mockup + floating badges -->
-        <div class="relative hidden shrink-0 lg:block" style="width: 757px; height: 846px">
-          <img :src="mobileImg" alt="" class="h-full w-auto" />
+        <!-- Phone mockup + floating badges. Fixed 757×846 art, scaled to fit on
+             smaller screens (see phoneScale) so it shows on mobile too, centered. -->
+        <div class="relative mx-auto shrink-0 overflow-hidden lg:mx-0 lg:overflow-visible" :style="phoneBoxStyle">
+         <div class="relative" :style="phoneInnerStyle">
+          <img :src="mobileImg" alt="" class="phone-fade h-full w-auto" />
 
           <!-- users badge -->
           <div
@@ -136,8 +169,28 @@ const badge = 'rounded-full bg-[#FFFFFFA3] shadow-[0_6px_24px_rgba(0,0,0,0.10)] 
           >
             <img :src="bookIcon" alt="" class="h-7 w-7" />
           </div>
+         </div>
         </div>
       </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+/* The mockup's forearm is cut flat at BOTH the bottom and right edges of the
+   image canvas (opaque pixels in the bottom-right corner). On mobile the whole
+   image shows, so those cuts read as hard edges against the green section. Fade
+   the bottom-right corner (intersect of a bottom + right gradient) so the arm
+   dissolves while the phone and gripping hand — up top-left — stay crisp.
+   Desktop keeps the image as-is. */
+@media (max-width: 1023px) {
+  .phone-fade {
+    -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 90%),
+      linear-gradient(to right, #000 72%, transparent 98%);
+    mask-image: linear-gradient(to bottom, #000 60%, transparent 90%),
+      linear-gradient(to right, #000 72%, transparent 98%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+}
+</style>

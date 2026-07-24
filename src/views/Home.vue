@@ -19,7 +19,9 @@ const sharedBg = 'radial-gradient(96.97% 32.16% at 50% 100%, #9FE870 0%, #FFFFFF
     <Features />
     <Introduction />
 
-    <div :style="{ background: sharedBg }">
+    <!-- -mt-px: overlap the section above by 1px so the dark body can't show a
+         seam between these light backgrounds on fractional-pixel viewports. -->
+    <div class="-mt-px" :style="{ background: sharedBg }">
       <Integrations />
       <WhyOurPlatform />
       <Reviews />

@@ -90,7 +90,7 @@ const WHITE_LOGO = new Set([
 // a square contain-fit shrinks it to a sliver — cover-crop the empty sides so
 // the badge fills the box like the rest.
 const SIZE_OVERRIDE: Record<string, string> = {
-  KUAF: 'h-20 w-20 object-cover',
+  KUAF: 'h-14 w-14 md:h-20 md:w-20 object-cover',
 }
 
 const partners: Partner[] = Object.entries(logoModules)
@@ -104,7 +104,9 @@ const partners: Partner[] = Object.entries(logoModules)
       white: WHITE_LOGO.has(key),
       logoClass:
         SIZE_OVERRIDE[key] ??
-        (LABEL_IN_LOGO.has(key) ? 'h-14 w-auto object-contain' : 'h-18 w-18 object-contain'),
+        (LABEL_IN_LOGO.has(key)
+          ? 'h-10 md:h-14 w-auto object-contain'
+          : 'h-12 w-12 md:h-18 md:w-18 object-contain'),
     }
   })
   .filter((p) => !EXCLUDE.has(p.key))
@@ -117,11 +119,11 @@ const rowTwo = partners.slice(14)
 
 <template>
   <section class="overflow-x-clip bg-black text-white">
-    <div class="mx-auto max-w-296 px-8">
+    <div class="mx-auto max-w-296 px-5 md:px-8">
       <!-- 1. Title -->
-      <div class="py-20">
+      <div class="py-12 md:py-20">
         <h1
-          class="mx-auto max-w-4xl text-center font-sf text-[64px] font-medium leading-18 tracking-[0.01em] text-white"
+          class="mx-auto max-w-4xl text-center font-sf text-[34px] leading-10 sm:text-[46px] sm:leading-13 md:text-[64px] md:leading-18 font-medium tracking-[0.01em] text-white"
         >
           <span class="relative inline-block text-[#9FE870]">
             AI
@@ -161,9 +163,9 @@ const rowTwo = partners.slice(14)
         </h1>
 
         <p
-          class="mx-auto mt-6 whitespace-nowrap text-center font-sf text-[20px] font-normal leading-7 tracking-[0.02em] text-[#D2D2D2]"
+          class="mx-auto mt-5 md:mt-6 max-w-xl md:max-w-none whitespace-normal md:whitespace-nowrap text-center font-sf text-[16px] md:text-[20px] font-normal leading-6 md:leading-7 tracking-[0.02em] text-[#D2D2D2]"
         >
-          {{ $t('hero.description.line1') }} <br />
+          {{ $t('hero.description.line1') }} <br class="hidden md:inline" />
           {{ $t('hero.description.line2') }}
         </p>
 
@@ -227,7 +229,7 @@ const rowTwo = partners.slice(14)
             />
           </div>
           <div
-            class="relative z-10 w-[48%] rounded-2xl border-[3px] border-primary-400/90 p-2 shadow-[0_0_100px_rgba(159,232,112,0.5),0_30px_60px_rgba(0,0,0,0.6)]"
+            class="relative z-10 w-[88%] sm:w-[64%] md:w-[48%] rounded-2xl border-[3px] border-primary-400/90 p-1.5 md:p-2 shadow-[0_0_100px_rgba(159,232,112,0.5),0_30px_60px_rgba(0,0,0,0.6)]"
           >
             <img
               :src="heroCenter"
@@ -239,7 +241,7 @@ const rowTwo = partners.slice(14)
       </div>
 
       <!-- 3. University logos (full-bleed band) -->
-      <div class="relative left-1/2 w-screen -translate-x-1/2 space-y-6 py-16">
+      <div class="relative left-1/2 w-screen -translate-x-1/2 space-y-6 py-12 md:py-16">
         <p
           class="text-center font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#D2D2D2]"
         >
@@ -252,7 +254,7 @@ const rowTwo = partners.slice(14)
             <div
               v-for="(p, i) in [...rowOne, ...rowOne]"
               :key="`r1-${i}-${p.key}`"
-              class="mr-10 flex shrink-0 items-center gap-3"
+              class="mr-6 md:mr-10 flex shrink-0 items-center gap-2 md:gap-3"
             >
               <img
                 :src="p.url"
@@ -262,7 +264,7 @@ const rowTwo = partners.slice(14)
               />
               <span
                 v-if="!p.labelInLogo"
-                class="max-w-50 font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#D2D2D2]"
+                class="max-w-36 md:max-w-50 font-sf text-[12px] md:text-[14px] font-normal leading-4 md:leading-4.5 tracking-[0.02em] text-[#D2D2D2]"
                 >{{
                 p.name
               }}</span>
@@ -276,7 +278,7 @@ const rowTwo = partners.slice(14)
             <div
               v-for="(p, i) in [...rowTwo, ...rowTwo]"
               :key="`r2-${i}-${p.key}`"
-              class="mr-10 flex shrink-0 items-center gap-3"
+              class="mr-6 md:mr-10 flex shrink-0 items-center gap-2 md:gap-3"
             >
               <img
                 :src="p.url"
@@ -286,7 +288,7 @@ const rowTwo = partners.slice(14)
               />
               <span
                 v-if="!p.labelInLogo"
-                class="max-w-50 font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#D2D2D2]"
+                class="max-w-36 md:max-w-50 font-sf text-[12px] md:text-[14px] font-normal leading-4 md:leading-4.5 tracking-[0.02em] text-[#D2D2D2]"
                 >{{
                 p.name
               }}</span>

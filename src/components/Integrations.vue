@@ -85,14 +85,32 @@ function bookStyle(b: (typeof books)[number]) {
     boxShadow: b.shadow,
   }
 }
+
+// Stacked cards shown on mobile/tablet (< xl), where the fixed-px bento art can't
+// fit. Each card lists its integration logos plus the same title/description copy.
+const mobileCards = computed(() => [
+  { title: t('integrations.hemisTitle'), desc: t('integrations.hemisDesc'), logos: [hemisIcon, logoMark] },
+  { title: 'ZOOM', desc: t('integrations.zoomDesc'), logos: [zoomIcon] },
+  { title: 'Antiplag.uz', desc: t('integrations.antiplagDesc'), logos: [checkIcon] },
+  {
+    title: t('integrations.paymentsTitle'),
+    desc: t('integrations.paymentsDesc'),
+    logos: [clickIcon, paymeIcon, uzcardIcon, humoIcon],
+  },
+  {
+    title: t('integrations.libraryTitle'),
+    desc: t('integrations.libraryDesc'),
+    logos: [ebscoIcon, springerIcon, jstorIcon, ziyonetIcon],
+  },
+])
 </script>
 
 <template>
-  <section id="integratsiyalar" class="text-[#0B0E04]">
-    <div class="mx-auto max-w-296 px-8 py-20">
+  <section id="integratsiyalar" class="overflow-x-clip text-[#0B0E04]">
+    <div class="mx-auto max-w-296 px-5 md:px-8 py-14 md:py-20">
       <!-- Header -->
       <div class="max-w-185.25">
-        <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
+        <h2 class="font-sf text-[28px] leading-9 sm:text-[38px] sm:leading-11 md:text-[48px] md:leading-14 font-semibold tracking-[0.01em] text-[#0B0E04]">
           {{ $t('integrations.titleLine1') }}<br />
           {{ $t('integrations.titleLine2') }}
         </h2>
@@ -104,9 +122,37 @@ function bookStyle(b: (typeof books)[number]) {
         </p>
       </div>
 
-      <!-- Bento grid -->
+      <!-- Mobile / tablet: a clean stacked version of the cards. The pixel-perfect
+           bento below only fits once its ~1120px canvas has room (xl+), so smaller
+           screens get this readable stack instead of clipped, off-balance art. -->
+      <div class="mt-10 flex flex-col gap-4 xl:hidden">
+        <div
+          v-for="card in mobileCards"
+          :key="card.title"
+          class="rounded-3xl bg-[#F4F4F4] p-5 sm:p-6"
+        >
+          <div class="flex flex-wrap items-center gap-2.5">
+            <span
+              v-for="(logo, i) in card.logos"
+              :key="i"
+              class="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-white p-2.5 shadow-[0px_2px_12px_0px_#0000000A]"
+            >
+              <img :src="logo" alt="" class="max-h-full max-w-full object-contain" />
+            </span>
+          </div>
+          <h3 class="mt-4 font-sf text-[18px] font-semibold leading-6 tracking-[0.02em] text-[#0B0E04]">
+            {{ card.title }}
+          </h3>
+          <p class="mt-1.5 font-sf text-[14px] font-normal leading-5 tracking-[0.02em] text-[#606060]">
+            {{ card.desc }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Bento grid — fixed-px internal art (268/552px cells), ~1120px wide; only
+           shown from xl up where the full canvas fits. -->
       <div
-        class="mt-16 grid auto-rows-[268px] grid-cols-[repeat(4,minmax(0,268px))] justify-start gap-4"
+        class="mt-16 hidden auto-rows-[268px] grid-cols-[repeat(4,minmax(0,268px))] justify-start gap-4 xl:grid"
       >
         <!-- row 1: big horizontal — HEMIS sinxronizatsiyasi radar -->
         <div class="relative col-span-2 overflow-hidden rounded-3xl bg-[#F4F4F4]">
@@ -372,3 +418,12 @@ function bookStyle(b: (typeof books)[number]) {
     </div>
   </section>
 </template>
+
+<style scoped>
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+</style>

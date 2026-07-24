@@ -46,16 +46,25 @@ const reviews = computed<Review[]>(() => [
 
 const scroller = ref<HTMLElement | null>(null)
 function scroll(direction: number) {
-  scroller.value?.scrollBy({ left: direction * 386, behavior: 'smooth' })
+  const el = scroller.value
+  if (!el) return
+  // Step by one card (card width + gap), derived from the live layout so it works
+  // at every breakpoint instead of a hard-coded desktop value.
+  const kids = el.children
+  const step =
+    kids.length > 1
+      ? (kids[1] as HTMLElement).offsetLeft - (kids[0] as HTMLElement).offsetLeft
+      : ((kids[0] as HTMLElement)?.offsetWidth ?? 336)
+  el.scrollBy({ left: direction * step, behavior: 'smooth' })
 }
 </script>
 
 <template>
   <section id="natijalar" class="text-[#0B0E04]">
-    <div class="mx-auto max-w-296 px-8 py-20">
+    <div class="mx-auto max-w-296 px-5 md:px-8 py-14 md:py-20">
       <!-- Header: title + carousel buttons -->
       <div class="flex items-end justify-between gap-6">
-        <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
+        <h2 class="font-sf text-[28px] leading-9 sm:text-[38px] sm:leading-11 md:text-[48px] md:leading-14 font-semibold tracking-[0.01em] text-[#0B0E04]">
           {{ $t('reviews.titleLine1') }}<br />
           {{ $t('reviews.titleLine2') }}
         </h2>
@@ -83,12 +92,12 @@ function scroll(direction: number) {
       <!-- Review cards -->
       <div
         ref="scroller"
-        class="no-scrollbar edge-fade mt-12 flex items-start gap-6 overflow-x-auto pb-2"
+        class="no-scrollbar edge-fade mt-10 md:mt-12 flex snap-x snap-mandatory items-start gap-4 md:gap-6 overflow-x-auto pb-2 md:snap-none"
       >
         <div
           v-for="(review, i) in reviews"
           :key="i"
-          class="flex w-90.5 shrink-0 flex-col gap-4 rounded-3xl bg-[#F4F4F4A3] p-6"
+          class="flex w-80 snap-start sm:w-90.5 shrink-0 flex-col gap-4 rounded-3xl bg-[#F4F4F4A3] p-5 sm:p-6"
         >
           <p class="font-sf text-[16px] font-normal leading-5.5 tracking-[0.02em] text-[#4A4A4A]">
             {{ review.text }}
@@ -117,9 +126,13 @@ function scroll(direction: number) {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
-/* Fade the start/end of the card row so they don't cut on a hard line. */
-.edge-fade {
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-          mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+/* Fade the start/end of the card row so they don't cut on a hard line. Desktop
+   only — on mobile the fade eats into the first card's text (it starts at the
+   container edge), so the row reads as clipped/off-centre. */
+@media (min-width: 768px) {
+  .edge-fade {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+            mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  }
 }
 </style>

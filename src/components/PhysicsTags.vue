@@ -12,6 +12,11 @@ const props = defineProps<{ tags: Tag[] }>()
 const PILL =
   'inline-flex items-center rounded-[20px] px-4 py-2 font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] whitespace-nowrap text-[#0B0E04]'
 
+// On small screens the physics box is too narrow for the wide pills, so they
+// pile up overlapping. There we skip the sim and lay the pills out as a normal
+// wrapped row instead.
+const mobile = ref(typeof window !== 'undefined' && window.innerWidth < 768)
+
 const container = ref<HTMLElement | null>(null)
 const tagRefs = ref<HTMLElement[]>([])
 function setTagRef(el: Element | null, i: number) {
@@ -141,7 +146,28 @@ function cleanup() {
   items = []
 }
 
+// Switch layouts if the viewport crosses the breakpoint (e.g. rotation). When
+// moving to the static mobile layout, clear any physics transforms; when moving
+// to desktop, kick off the sim.
+function onResize() {
+  const m = window.innerWidth < 768
+  if (m === mobile.value) return
+  mobile.value = m
+  if (m) {
+    tagRefs.value.forEach((tagEl) => {
+      if (tagEl) tagEl.style.transform = ''
+    })
+  } else {
+    started = false
+    start()
+  }
+}
+
 onMounted(() => {
+  window.addEventListener('resize', onResize)
+  // Mobile: leave the pills in normal flow, no physics.
+  if (mobile.value) return
+
   const el = container.value
   if (!el) return
   // Park the tags above the card until the drop begins.
@@ -165,16 +191,26 @@ onMounted(() => {
   observer.observe(el)
 })
 
-onBeforeUnmount(cleanup)
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onResize)
+  cleanup()
+})
 </script>
 
 <template>
-  <div ref="container" class="relative h-full min-h-28 w-full overflow-hidden">
+  <div
+    ref="container"
+    :class="
+      mobile
+        ? 'flex h-full min-h-28 w-full flex-wrap content-center items-center gap-2'
+        : 'relative h-full min-h-28 w-full overflow-hidden'
+    "
+  >
     <span
       v-for="(tag, i) in props.tags"
       :key="i"
       :ref="(el) => setTagRef(el as Element | null, i)"
-      :class="['absolute top-0 left-0', PILL]"
+      :class="[mobile ? '' : 'absolute top-0 left-0', PILL]"
       :style="{ backgroundColor: tag.color }"
       >{{ tag.text }}</span
     >

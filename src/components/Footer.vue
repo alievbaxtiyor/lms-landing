@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useDemoModal } from '../composables/useDemoModal'
 import logoMark from '../assets/logos/logo.svg'
@@ -11,6 +12,13 @@ import youtubeIcon from '../assets/icons/youtube.svg'
 
 const { t } = useI18n()
 const { openDemoModal } = useDemoModal()
+
+// The "moon" curve + upward tuck are a home-page transition into the green
+// mobile-app section above. On other routes (e.g. feature detail) the section
+// above is plain content, so the black arc would overlap and cut it off — only
+// enable the effect on the home route.
+const route = useRoute()
+const isHome = computed(() => route.path === '/')
 
 interface FooterLink {
   label: string
@@ -38,15 +46,15 @@ const socials = [
   { label: 'Telegram', href: 'https://t.me/lms_rasmiy', icon: telegramIcon, disabled: false },
   { label: 'Instagram', href: 'https://www.instagram.com/lms.uzb', icon: instagramIcon, disabled: false },
   { label: 'Facebook', href: 'https://www.facebook.com/share/1ErSfsqZv3/?mibextid=wwXIfr', icon: facebookIcon, disabled: false },
-  { label: 'YouTube', href: '', icon: youtubeIcon, disabled: true },
+  { label: 'YouTube', href: 'https://www.youtube.com/@lms_uz', icon: youtubeIcon, disabled: false },
 ]
 </script>
 
 <template>
-  <footer class="relative z-10 bg-[#0B0E04] text-white lg:-mt-28">
+  <footer class="relative z-10 bg-[#0B0E04] text-white" :class="{ 'lg:-mt-28': isHome }">
     <!-- Curved "moon" top edge: a black cap that arcs up into the green section
-         above, leaving green visible above the curve. -->
-    <div class="pointer-events-none absolute inset-x-0 bottom-full -mb-px">
+         above, leaving green visible above the curve. Home route only. -->
+    <div v-if="isHome" class="pointer-events-none absolute inset-x-0 bottom-full -mb-px">
       <svg
         class="block h-18 w-full"
         viewBox="0 0 1440 72"
@@ -63,16 +71,16 @@ const socials = [
       style="background: radial-gradient(80% 100% at 50% 100%, rgba(159, 232, 112, 0.22) 0%, rgba(159, 232, 112, 0) 70%)"
     ></div>
 
-    <div class="relative mx-auto max-w-296 px-8 py-20">
+    <div class="relative mx-auto max-w-296 px-5 md:px-8 py-16 md:py-20">
       <!-- CTA -->
       <div class="flex flex-col items-center text-center">
         <h2
-          class="mx-auto max-w-185.5 font-sf text-[64px] font-medium leading-18 tracking-[0.01em]"
+          class="mx-auto max-w-185.5 font-sf text-[34px] leading-10 sm:text-[46px] sm:leading-13 md:text-[64px] md:leading-18 font-medium tracking-[0.01em]"
         >
           <span class="text-[#9FE870]">lms.uz</span>{{ $t('footer.ctaTitleSuffix') }}
         </h2>
         <p
-          class="mx-auto mt-6 max-w-185.5 font-sf text-[20px] font-normal leading-7 tracking-[0.02em] text-[#D2D2D2]"
+          class="mx-auto mt-5 md:mt-6 max-w-185.5 font-sf text-[16px] md:text-[20px] font-normal leading-6 md:leading-7 tracking-[0.02em] text-[#D2D2D2]"
         >
           {{ $t('footer.ctaDesc') }}
         </p>
@@ -164,6 +172,17 @@ const socials = [
               class="font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#A4A4A4] transition-colors hover:text-white"
             >
               {{ email }}
+            </a>
+
+            <!-- Direct sales contact on Telegram -->
+            <a
+              href="https://t.me/lms_uz_sales"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#A4A4A4] transition-colors hover:text-white"
+            >
+              <img :src="telegramIcon" alt="" class="h-4 w-4" />
+              {{ $t('footer.telegramContact') }}
             </a>
 
             <!-- Social icons — only enabled ones link out; the rest are disabled -->

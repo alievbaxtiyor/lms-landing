@@ -19,11 +19,11 @@ function toggle(i: number) {
 
 <template>
   <section id="faq" class="text-[#0B0E04]">
-    <div class="mx-auto max-w-296 px-8 py-20">
-      <div class="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
+    <div class="mx-auto max-w-296 px-5 md:px-8 py-14 md:py-20">
+      <div class="flex flex-col gap-8 lg:flex-row lg:gap-12 lg:items-start lg:justify-between">
         <!-- Title -->
         <h2
-          class="max-w-138 font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]"
+          class="max-w-138 font-sf text-[28px] leading-9 sm:text-[38px] sm:leading-11 md:text-[48px] md:leading-14 font-semibold tracking-[0.01em] text-[#0B0E04]"
         >
           {{ $t('faq.titleLine1') }} <br />
           {{ $t('faq.titleLine2') }}

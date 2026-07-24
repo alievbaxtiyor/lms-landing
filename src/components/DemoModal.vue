@@ -214,13 +214,29 @@ onUnmounted(() => {
               {{ $t('hero.modal.consent') }}
             </p>
 
-            <button
-              type="submit"
-              :disabled="status === 'sending'"
-              class="flex h-12.5 w-full items-center justify-center rounded-full bg-[#9FE870] px-6 py-3.5 text-[16px] font-medium leading-5.5 tracking-[0.02em] text-[#0B0E04] transition-colors hover:bg-[#aef07e] disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {{ submitLabel }}
-            </button>
+            <div class="flex items-center gap-3">
+              <button
+                type="submit"
+                :disabled="status === 'sending'"
+                class="flex h-12.5 flex-1 items-center justify-center rounded-full bg-[#9FE870] px-6 py-3.5 text-[16px] font-medium leading-5.5 tracking-[0.02em] text-[#0B0E04] transition-colors hover:bg-[#aef07e] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {{ submitLabel }}
+              </button>
+
+              <!-- Contact via Telegram (sales) -->
+              <a
+                href="https://t.me/lms_uz_sales"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Telegram"
+                title="Telegram: @lms_uz_sales"
+                class="flex h-12.5 w-12.5 shrink-0 items-center justify-center rounded-full bg-[#9FE8701A] text-[#9FE870] transition-colors hover:bg-[#9FE87033]"
+              >
+                <svg class="h-5.5 w-5.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M10 20C4.477 20 0 15.523 0 10C0 4.477 4.477 0 10 0C15.523 0 20 4.477 20 10C20 15.523 15.523 20 10 20ZM6.89 11.17L6.903 11.163L7.773 14.033C7.885 14.344 8.039 14.4 8.226 14.374C8.414 14.349 8.513 14.248 8.636 14.13L9.824 12.982L12.374 14.87C12.84 15.127 13.175 14.994 13.291 14.438L14.948 6.616C15.131 5.888 14.811 5.596 14.246 5.828L4.513 9.588C3.849 9.854 3.853 10.226 4.393 10.391L6.89 11.171V11.17Z" />
+                </svg>
+              </a>
+            </div>
           </form>
         </div>
       </div>

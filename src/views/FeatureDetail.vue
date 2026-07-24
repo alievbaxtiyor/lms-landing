@@ -65,7 +65,7 @@ function toggleFullscreen() {
 
 <template>
   <section class="bg-white text-[#0B0E04]">
-    <div class="mx-auto max-w-296 px-8 py-12">
+    <div class="mx-auto max-w-296 px-5 md:px-8 py-10 md:py-12">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 font-sf text-[14px] leading-4.5 tracking-[0.02em] text-[#777777]">
         <RouterLink to="/" class="transition-colors hover:text-[#0B0E04]">{{
@@ -83,7 +83,7 @@ function toggleFullscreen() {
             <img :src="feature.icon" alt="" class="h-9 w-9" />
           </div>
 
-          <h1 class="mt-6 font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
+          <h1 class="mt-6 font-sf text-[30px] leading-9 sm:text-[38px] sm:leading-11 md:text-[48px] md:leading-14 font-semibold tracking-[0.01em] text-[#0B0E04]">
             {{ $t('features.items.' + feature.slug + '.label') }}
           </h1>
 

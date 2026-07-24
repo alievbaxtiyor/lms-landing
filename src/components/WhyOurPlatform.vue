@@ -183,17 +183,35 @@ function updatePill() {
 }
 watch(active, () => nextTick(updatePill))
 let pillRO: ResizeObserver | null = null
+
+// Analytics node-tree: its nodes are absolutely placed inside a fixed 472×145
+// frame, so on a narrow card they clip. Scale the whole frame down to fit the
+// card width (never up past 1:1) and shrink the reserved height to match.
+const treeWrap = ref<HTMLElement | null>(null)
+const treeScale = ref(1)
+const treeH = computed(() => Math.round(145 * treeScale.value))
+function fitTree() {
+  const el = treeWrap.value
+  if (!el) return
+  treeScale.value = Math.min(1, el.clientWidth / 472)
+}
+
 onMounted(() => {
   nextTick(() => {
     updatePill()
     pillReady.value = true
+    fitTree()
   })
+  window.addEventListener('resize', fitTree)
   if (typeof ResizeObserver !== 'undefined') {
     pillRO = new ResizeObserver(() => updatePill())
     if (listEl.value) pillRO.observe(listEl.value)
   }
 })
-onUnmounted(() => pillRO?.disconnect())
+onUnmounted(() => {
+  pillRO?.disconnect()
+  window.removeEventListener('resize', fitTree)
+})
 
 // Security-expertise steps (second big card). Each step's badge gets a
 // progressively darker green.
@@ -250,8 +268,8 @@ const stats = computed(() => [
 
 <template>
   <section class="text-[#0B0E04]">
-    <div class="mx-auto max-w-296 px-8 py-20">
-      <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
+    <div class="mx-auto max-w-296 px-5 md:px-8 py-14 md:py-20">
+      <h2 class="font-sf text-[28px] leading-9 sm:text-[38px] sm:leading-11 md:text-[48px] md:leading-14 font-semibold tracking-[0.01em] text-[#0B0E04]">
         {{ $t('why.sectionTitle') }}
       </h2>
 
@@ -301,9 +319,9 @@ const stats = computed(() => [
         <!-- Right: info card — one fixed height for every selector so the box
              never resizes; its content cross-fades on change (.why-swap below). -->
         <div
-          class="flex w-full shrink-0 flex-col rounded-3xl border border-[#F4F4F4] bg-[#F4F4F4] p-8 lg:h-90 lg:w-138 lg:overflow-hidden"
+          class="flex min-h-80 w-full shrink-0 flex-col overflow-hidden rounded-3xl border border-[#F4F4F4] bg-[#F4F4F4] p-6 sm:p-8 lg:h-90 lg:min-h-0 lg:w-138"
         >
-          <Transition name="why-swap" mode="out-in">
+          <Transition name="why-swap" mode="out-in" @after-enter="fitTree">
             <div :key="active" class="flex min-h-0 flex-1 flex-col gap-6">
           <div class="shrink-0">
             <h3 class="font-sf text-[24px] font-semibold leading-8 tracking-[0.02em] text-[#0B0E04]">
@@ -327,20 +345,20 @@ const stats = computed(() => [
                  value are spread evenly so the card doesn't read as empty -->
             <div class="flex flex-1 items-stretch">
               <template v-for="(stat, i) in current.stats" :key="i">
-                <div v-if="i > 0" class="mx-1.5 w-px self-stretch bg-[#E8E8E8]"></div>
-                <div class="flex flex-1 flex-col items-center justify-evenly gap-3 rounded-[20px] py-1 text-center">
+                <div v-if="i > 0" class="mx-1 sm:mx-1.5 w-px self-stretch bg-[#E8E8E8]"></div>
+                <div class="flex min-w-0 flex-1 flex-col items-center justify-evenly gap-2 sm:gap-3 rounded-[20px] py-1 text-center">
                   <span
-                    class="font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-[#4A4A4A]"
+                    class="w-full wrap-break-word font-sf text-[12px] sm:text-[14px] font-normal leading-4 sm:leading-4.5 tracking-[0.02em] text-[#4A4A4A]"
                   >
                     {{ stat.label }}
                   </span>
                   <span
-                    class="h-9 w-9 [&>svg]:block [&>svg]:h-full [&>svg]:w-full"
+                    class="h-7 w-7 sm:h-9 sm:w-9 [&>svg]:block [&>svg]:h-full [&>svg]:w-full"
                     :style="{ color: stat.color }"
                     v-html="recolor(stat.icon)"
                   ></span>
                   <span
-                    class="block min-h-12 font-sf text-[18px] font-semibold leading-6 tracking-[0.02em] text-[#333333]"
+                    class="block w-full wrap-break-word min-h-12 font-sf text-[13px] sm:text-[18px] font-semibold leading-4.5 sm:leading-6 tracking-[0.02em] text-[#333333]"
                   >
                     {{ stat.value }}
                   </span>
@@ -357,26 +375,29 @@ const stats = computed(() => [
                the card edges). -->
           <div
             v-else-if="current.cards"
-            class="flex flex-1 flex-wrap content-center items-center justify-start gap-x-2 gap-y-4"
+            class="flex flex-1 flex-wrap content-center items-center justify-start gap-x-2 gap-y-2.5 sm:gap-y-4"
           >
             <template v-for="(card, i) in current.cards" :key="i">
               <span
-                class="inline-flex items-center gap-2 rounded-[30px] bg-white px-4 py-3.5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+                class="inline-flex items-center gap-2 rounded-[30px] bg-white px-3.5 py-2.5 sm:px-4 sm:py-3.5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
               >
-                <img :src="card.icon" alt="" class="h-7 w-7" />
+                <img :src="card.icon" alt="" class="h-6 w-6 sm:h-7 sm:w-7" />
                 <span
-                  class="font-sf text-[18px] font-semibold leading-6.5 tracking-[0.02em] text-[#333333]"
+                  class="font-sf text-[15px] sm:text-[18px] font-semibold leading-5.5 sm:leading-6.5 tracking-[0.02em] text-[#333333]"
                 >
                   {{ card.label }}
                 </span>
               </span>
-              <div v-if="i === 1" class="basis-full"></div>
+              <!-- Force a row break after the 2nd card on desktop only; on mobile
+                   the wide pills wrap on their own, so the break just wastes height. -->
+              <div v-if="i === 1" class="hidden basis-full lg:block"></div>
             </template>
           </div>
 
           <!-- node-tree body (analitika) — 1:1 with the Figma frame; grows in
                with a staggered "tree" reveal each time it's selected. -->
-          <div v-else-if="current.tree" class="relative mx-auto h-[145px] w-[472px] max-w-full">
+          <div v-else-if="current.tree" ref="treeWrap" class="relative mx-auto w-full max-w-118" :style="{ height: treeH + 'px' }">
+           <div class="absolute left-0 top-0 h-36.25 w-118 origin-top-left" :style="{ transform: `scale(${treeScale})` }">
             <!-- connector lines (draw outward from Hisobotlar) -->
             <svg
               viewBox="0 0 472 145"
@@ -410,6 +431,7 @@ const stats = computed(() => [
             >
               {{ node.label }}
             </div>
+           </div>
           </div>
           </div>
             </div>
@@ -417,8 +439,10 @@ const stats = computed(() => [
         </div>
       </div>
 
-      <!-- Big card -->
-      <div class="relative mt-8 h-138 w-full max-w-280 overflow-hidden rounded-3xl bg-[#9FE870]">
+      <!-- Big card — the composition is laid out in absolute px (content reaches
+           x≈1088px) so it only fits once the card is full width; shown from xl up,
+           with a clean stacked fallback below. -->
+      <div class="relative mt-8 hidden h-138 w-full max-w-280 overflow-hidden rounded-3xl bg-[#9FE870] xl:block">
         <!-- green frame around the back dashboard -->
         <div
           class="absolute rounded-[18px] border-2 border-[#71DD2B]"
@@ -467,6 +491,29 @@ const stats = computed(() => [
         </div>
       </div>
 
+      <!-- Fallback stats card (below xl): the dashboard image + a simple stat
+           grid so all the numbers stay visible on smaller screens. -->
+      <div class="mt-8 w-full max-w-280 overflow-hidden rounded-3xl bg-[#9FE870] p-6 sm:p-8 xl:hidden">
+        <img :src="whyusOn" alt="" class="w-full rounded-xl shadow-lg" />
+        <!-- 2-col grid; the "wide" stat (650K+) spans both columns so all 5 tiles
+             fill the grid evenly with no empty cell. -->
+        <div class="mt-6 grid grid-cols-2 gap-2">
+          <div
+            v-for="(s, i) in stats"
+            :key="i"
+            class="flex flex-col justify-start gap-2 rounded-2xl bg-[#E7F9DBB2] p-4"
+            :class="{ 'col-span-2': s.wide }"
+          >
+            <span class="font-sf text-[32px] sm:text-[40px] font-medium leading-none tracking-[0.01em] text-[#0B0E04]">
+              {{ s.value }}
+            </span>
+            <span class="font-sf text-[13px] font-normal leading-4.5 tracking-[0.02em] text-[#3D7D14]">
+              {{ s.label }}
+            </span>
+          </div>
+        </div>
+      </div>
+
       <!-- Security expertise hero: full shield background + title + intro + the
            3 expertise steps, held in a width-capped left column so the shields
            stay fully visible on the right. The "Rasmiy e'tirof va hujjatlar"
@@ -481,8 +528,8 @@ const stats = computed(() => [
           style="background: linear-gradient(90deg, rgba(245,249,252,0.96) 0%, rgba(245,249,252,0.88) 42%, rgba(245,249,252,0) 66%)"
         ></div>
 
-        <div class="relative max-w-165 p-12 sm:p-14">
-          <h3 class="font-sf text-[32px] font-semibold leading-10 tracking-[0.01em] text-[#0B0E04]">
+        <div class="relative max-w-165 p-6 sm:p-12 lg:p-14">
+          <h3 class="font-sf text-[24px] leading-8 sm:text-[32px] sm:leading-10 font-semibold tracking-[0.01em] text-[#0B0E04]">
             {{ $t('why.security.cardTitle') }}
           </h3>
           <p class="mt-3.5 font-sf text-[16px] leading-[23px] tracking-[0.02em] text-[#333]">

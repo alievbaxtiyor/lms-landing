@@ -25,6 +25,15 @@ function paint() {
   raf = 0
   const el = scroller.value
   if (!el || !el.children.length) return
+  // On small screens skip the coverflow scale/opacity — on a narrow row it just
+  // makes the edge cards look faded and hard to read. Show them all full-size.
+  if (window.innerWidth < 768) {
+    for (const card of Array.from(el.children) as HTMLElement[]) {
+      card.style.transform = 'scale(1)'
+      card.style.opacity = '1'
+    }
+    return
+  }
   const W = el.clientWidth || 1
   const first = el.children[0] as HTMLElement
   const edge = Math.min(W * 0.18, first.offsetLeft + first.offsetWidth / 2)
@@ -58,10 +67,10 @@ onBeforeUnmount(() => {
 
 <template>
   <section id="imkoniyatlar" class="overflow-x-clip bg-black text-white">
-    <div class="mx-auto max-w-296 px-8 py-20">
+    <div class="mx-auto max-w-296 px-5 md:px-8 py-14 md:py-20">
       <!-- Header: title + carousel arrows -->
       <div class="flex items-end justify-between gap-6">
-        <h2 class="font-sf text-5xl font-bold leading-tight tracking-tight">
+        <h2 class="font-sf text-[28px] sm:text-4xl md:text-5xl font-bold leading-tight tracking-tight">
           {{ $t('features.titlePre') }}<br />
           <span class="text-[#9FE870]">{{ $t('features.titleHighlight') }}</span>
           {{ $t('features.titlePost') }}
@@ -97,7 +106,7 @@ onBeforeUnmount(() => {
            half a card) so the LAST card can still be scrolled to the centre. -->
       <div
         ref="scroller"
-        class="no-scrollbar edge-fade relative left-1/2 mt-12 flex w-screen -translate-x-1/2 scroll-smooth gap-6 overflow-x-auto pb-6 pl-[max(2rem,calc((100vw-74rem)/2+2rem))] pr-[calc(50vw-86.5px)]"
+        class="no-scrollbar edge-fade relative left-1/2 mt-10 md:mt-12 flex w-screen -translate-x-1/2 scroll-smooth gap-6 overflow-x-auto pb-6 pl-[max(1.25rem,calc((100vw-74rem)/2+2rem))] pr-5 md:pr-[calc(50vw-86.5px)]"
       >
         <RouterLink
           v-for="f in features"
@@ -130,20 +139,24 @@ onBeforeUnmount(() => {
    only dissolves the last sliver at each edge. Kept to a small 28px inset —
    inside even the tightest gutter — so it never touches the first card's label
    when it rests on the container-start line. */
-.edge-fade {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 28px,
-    #000 calc(100% - 28px),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 28px,
-    #000 calc(100% - 28px),
-    transparent 100%
-  );
+/* Only fade the row edges on desktop, where the coverflow is active. On mobile
+   the mask just dims the visible cards and makes them look blurry, so drop it. */
+@media (min-width: 768px) {
+  .edge-fade {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 28px,
+      #000 calc(100% - 28px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 28px,
+      #000 calc(100% - 28px),
+      transparent 100%
+    );
+  }
 }
 </style>

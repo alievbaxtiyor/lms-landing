@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import leftIcon from '../assets/icons/left.svg'
 import rightIcon from '../assets/icons/right.svg'
@@ -20,13 +20,33 @@ const activeIndex = ref(0)
 // pushed to its side (right if it comes after the active one, left if before),
 // shrunk and dimmed. Switching just re-runs this and the CSS transition on
 // .cf-card slides + scales each card smoothly between the two states.
+//
+// The card is a fixed 1072×616 on desktop, but on small screens that (and the
+// off-screen control pills sitting at its inset edges) breaks — so the card
+// size and side-shift track the viewport width below.
 const SIDE_SCALE = 0.8
-const SIDE_SHIFT = 920 // px each non-active card is pushed to its side
+const viewport = ref(typeof window !== 'undefined' ? window.innerWidth : 1280)
+function onResize() {
+  viewport.value = window.innerWidth
+}
+onMounted(() => window.addEventListener('resize', onResize))
+onBeforeUnmount(() => window.removeEventListener('resize', onResize))
+
+const isMobile = computed(() => viewport.value < 768)
+const cardW = computed(() => (isMobile.value ? Math.min(viewport.value * 0.9, 560) : 1072))
+const cardH = computed(() => (isMobile.value ? Math.round((cardW.value * 9) / 16) : 616))
+// On mobile push the inactive card fully off to the side; on desktop keep the
+// designed peek.
+const sideShift = computed(() => (isMobile.value ? cardW.value * 1.05 : 920))
+const stageStyle = computed(() => ({ height: cardH.value + 'px' }))
+
 function cardStyle(idx: number) {
   const offset = idx - activeIndex.value
   const active = offset === 0
   return {
-    transform: `translate(-50%, -50%) translateX(${offset * SIDE_SHIFT}px) scale(${active ? 1 : SIDE_SCALE})`,
+    width: cardW.value + 'px',
+    height: cardH.value + 'px',
+    transform: `translate(-50%, -50%) translateX(${offset * sideShift.value}px) scale(${active ? 1 : SIDE_SCALE})`,
     opacity: active ? '1' : '0.5',
   }
 }
@@ -110,11 +130,11 @@ function toggleFullscreen() {
 
 <template>
   <section class="overflow-x-clip text-[#0B0E04]" :style="{ background: bg }">
-    <div class="mx-auto max-w-296 px-8 py-20">
+    <div class="mx-auto max-w-296 px-5 md:px-8 py-14 md:py-20">
       <!-- Header: title + description (left), slider buttons (right) -->
       <div class="flex items-end justify-between gap-6">
         <div class="max-w-138">
-          <h2 class="font-sf text-[48px] font-semibold leading-14 tracking-[0.01em] text-[#0B0E04]">
+          <h2 class="font-sf text-[28px] leading-9 sm:text-[38px] sm:leading-11 md:text-[48px] md:leading-14 font-semibold tracking-[0.01em] text-[#0B0E04]">
             {{ $t('introduction.titleLine1') }}<br />
             {{ $t('introduction.titleLine2') }}
           </h2>
@@ -150,11 +170,11 @@ function toggleFullscreen() {
            size; the other is smaller, dimmer and peeks from its side. Switching
            slides the active card off to the left and brings the other in from
            the right (and vice-versa) via the .cf-card transition. -->
-      <div class="cf-stage relative left-1/2 mt-12 h-154 w-screen -translate-x-1/2 overflow-hidden">
+      <div class="cf-stage relative left-1/2 mt-10 md:mt-12 w-screen -translate-x-1/2 overflow-hidden" :style="stageStyle">
         <div
           v-for="(src, idx) in slides"
           :key="idx"
-          class="cf-card absolute left-1/2 top-1/2 h-154 w-268"
+          class="cf-card absolute left-1/2 top-1/2"
           :class="idx === activeIndex ? 'z-20' : 'z-10'"
           :style="cardStyle(idx)"
         >
@@ -181,14 +201,14 @@ function toggleFullscreen() {
               <!-- Controls (active card only): two pills, 12px inset -->
                 <div
                   v-if="idx === activeIndex"
-                  class="absolute inset-x-3 bottom-3 flex items-center justify-between"
+                  class="absolute inset-x-2 md:inset-x-3 bottom-2 md:bottom-3 flex items-center justify-between gap-2"
                 >
                   <!-- left pill: play/pause + timeline -->
-                  <div class="flex h-12.5 items-center gap-5.5 rounded-full bg-[#33333329] py-1 pr-5.5 pl-1 backdrop-blur">
+                  <div class="flex h-11 md:h-12.5 items-center gap-2.5 md:gap-5.5 rounded-full bg-[#33333329] py-1 pr-3 md:pr-5.5 pl-1 backdrop-blur">
                     <button
                       type="button"
                       :aria-label="playPauseLabel"
-                      class="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] text-white backdrop-blur transition-colors hover:bg-[#0B0E04]"
+                      class="flex h-9 w-9 md:h-10.5 md:w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] text-white backdrop-blur transition-colors hover:bg-[#0B0E04]"
                       @click="togglePlay"
                     >
                       <svg v-if="isPlaying" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -199,7 +219,7 @@ function toggleFullscreen() {
                         <path d="M8 5v14l11-7z" />
                       </svg>
                     </button>
-                    <div class="relative h-1.5 w-59.25 cursor-pointer rounded-full bg-white/25" @click="seek">
+                    <div class="relative h-1.5 w-24 sm:w-40 md:w-59.25 cursor-pointer rounded-full bg-white/25" @click="seek">
                       <div
                         class="absolute inset-y-0 left-0 rounded-full bg-white"
                         :style="{ width: `${progress * 100}%` }"
@@ -212,11 +232,11 @@ function toggleFullscreen() {
                   </div>
 
                   <!-- right pill: mute + expand -->
-                  <div class="flex h-12.5 items-center gap-1 rounded-full bg-[#33333329] p-1 backdrop-blur">
+                  <div class="flex h-11 md:h-12.5 items-center gap-1 rounded-full bg-[#33333329] p-1 backdrop-blur">
                     <button
                       type="button"
                       :aria-label="$t('introduction.mute')"
-                      class="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] text-white backdrop-blur transition-colors hover:bg-[#0B0E04]"
+                      class="flex h-9 w-9 md:h-10.5 md:w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] text-white backdrop-blur transition-colors hover:bg-[#0B0E04]"
                       @click="toggleMute"
                     >
                       <!-- Muted: speaker with an X. Unmuted: speaker with waves. -->
@@ -252,7 +272,7 @@ function toggleFullscreen() {
                     <button
                       type="button"
                       :aria-label="$t('introduction.fullscreen')"
-                      class="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] backdrop-blur transition-colors hover:bg-[#0B0E04]"
+                      class="flex h-9 w-9 md:h-10.5 md:w-10.5 shrink-0 items-center justify-center rounded-full bg-[#0B0E04A3] backdrop-blur transition-colors hover:bg-[#0B0E04]"
                       @click="toggleFullscreen"
                     >
                       <img :src="expandIcon" alt="" class="h-5 w-5" />

@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Dark page backdrop (matches <meta name="theme-color">). Without it the body
+   defaults to white and bleeds through the 1px sub-pixel seams between adjacent
+   full-bleed black sections on some mobile DPRs — showing as a faint light line
+   (e.g. under the hero logo marquee). It also prevents a white overscroll flash. */
+body {
+  background-color: #0b0e04;
+}
+
 /* Smooth in-page navigation for anchor/hash links (footer, navbar). */
 @media (prefers-reduced-motion: no-preference) {
   html {

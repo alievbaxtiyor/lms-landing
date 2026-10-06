@@ -24,6 +24,11 @@ export default {
         label: 'Tashkilot nomi',
         placeholder: 'Tashkilot nomini yozing',
       },
+      student: {
+        label: 'Siz talabamisiz?',
+        yes: 'Ha',
+        no: "Yo'q",
+      },
       consent: "Men ma'lumotlarimdan foydalanish shartlariga roziman",
       success: "Rahmat! Tez orada siz bilan bog'lanamiz.",
       error: "Xatolik yuz berdi. Iltimos, ism va telefonni tekshirib qayta urinib ko'ring.",
@@ -56,6 +61,11 @@ export default {
         label: 'Название организации',
         placeholder: 'Введите название организации',
       },
+      student: {
+        label: 'Вы студент?',
+        yes: 'Да',
+        no: 'Нет',
+      },
       consent: 'Я согласен с условиями использования моих данных',
       success: 'Спасибо! Мы скоро свяжемся с вами.',
       error: 'Произошла ошибка. Пожалуйста, проверьте имя и телефон и попробуйте снова.',
@@ -87,6 +97,11 @@ export default {
       org: {
         label: 'Organization name',
         placeholder: 'Enter your organization name',
+      },
+      student: {
+        label: 'Are you a student?',
+        yes: 'Yes',
+        no: 'No',
       },
       consent: 'I agree to the terms of use of my data',
       success: "Thank you! We'll get in touch with you shortly.",

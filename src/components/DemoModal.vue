@@ -7,7 +7,7 @@ import dashboardIcon from '../assets/icons/dashboard.svg'
 const { t } = useI18n()
 const { showModal, closeDemoModal } = useDemoModal()
 
-const form = reactive({ name: '', phone: '', org: '' })
+const form = reactive({ name: '', phone: '', org: '', isStudent: null as boolean | null })
 const status = ref<'idle' | 'sending' | 'success' | 'error'>('idle')
 
 const submitLabel = computed(() =>
@@ -73,7 +73,8 @@ async function submitDemo() {
     `🆕 Yangi demo so'rovi\n\n` +
     `👤 Ism: ${name}\n` +
     `📞 Telefon: ${form.phone}` +
-    (org ? `\n🏢 Tashkilot: ${org}` : '')
+    (org ? `\n🏢 Tashkilot: ${org}` : '') +
+    (form.isStudent !== null ? `\n🎓 Talaba: ${form.isStudent ? 'Ha' : "Yo'q"}` : '')
 
   status.value = 'sending'
   try {
@@ -92,6 +93,7 @@ async function submitDemo() {
     form.name = ''
     form.phone = ''
     form.org = ''
+    form.isStudent = null
     window.setTimeout(closeDemoModal, 1800)
   } catch {
     status.value = 'error'
@@ -193,6 +195,30 @@ onUnmounted(() => {
                 :placeholder="$t('hero.modal.org.placeholder')"
                 :class="inputClass"
               />
+            </div>
+
+            <div class="flex flex-col gap-1.5" role="radiogroup" aria-labelledby="demo-student">
+              <span id="demo-student" class="text-[14px] font-medium leading-4.5 tracking-[0.02em] text-[#BBBBBB]">
+                {{ $t('hero.modal.student.label') }}
+              </span>
+              <div class="flex gap-3">
+                <button
+                  v-for="opt in [true, false]"
+                  :key="String(opt)"
+                  type="button"
+                  role="radio"
+                  :aria-checked="form.isStudent === opt"
+                  class="flex-1 rounded-full border px-4 py-3.5 text-[14px] font-medium leading-4.5 tracking-[0.02em] transition-colors"
+                  :class="
+                    form.isStudent === opt
+                      ? 'border-[#9FE870] bg-[#9FE8701A] text-[#9FE870]'
+                      : 'border-[#4A4A4A] bg-[#333333] text-white hover:bg-[#4A4A4A]'
+                  "
+                  @click="form.isStudent = opt"
+                >
+                  {{ $t(opt ? 'hero.modal.student.yes' : 'hero.modal.student.no') }}
+                </button>
+              </div>
             </div>
 
             <p

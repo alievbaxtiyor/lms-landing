@@ -17,6 +17,8 @@ export default {
     workflows: 'Workflows',
     telegramContact: "Telegram orqali bog'lanish",
     copyright: '© 2026 LMS.uz — Barcha huquqlar himoyalangan',
+    privacy: 'Maxfiylik siyosati',
+    terms: 'Foydalanish shartlari',
   },
   ru: {
     ctaTitleSuffix: ' вживую',
@@ -36,6 +38,8 @@ export default {
     workflows: 'Workflows',
     telegramContact: 'Написать в Telegram',
     copyright: '© 2026 LMS.uz — Все права защищены',
+    privacy: 'Политика конфиденциальности',
+    terms: 'Условия использования',
   },
   en: {
     ctaTitleSuffix: ' live',
@@ -55,5 +59,7 @@ export default {
     workflows: 'Workflows',
     telegramContact: 'Message us on Telegram',
     copyright: '© 2026 LMS.uz — All rights reserved',
+    privacy: 'Privacy Policy',
+    terms: 'Terms of Service',
   },
 }

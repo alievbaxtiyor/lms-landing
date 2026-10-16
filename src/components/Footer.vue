@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useDemoModal } from '../composables/useDemoModal'
 import logoMark from '../assets/logos/logo.svg'
@@ -217,6 +217,10 @@ const socials = [
         class="mt-9 text-center font-sf text-[14px] font-normal leading-4.5 tracking-[0.02em] text-white/55"
       >
         {{ $t('footer.copyright') }}
+      </p>
+      <p class="mt-3 flex justify-center gap-5 font-sf text-[14px] leading-4.5 tracking-[0.02em]">
+        <RouterLink to="/privacy" class="text-white/55 transition-colors hover:text-white">{{ $t('footer.privacy') }}</RouterLink>
+        <RouterLink to="/terms" class="text-white/55 transition-colors hover:text-white">{{ $t('footer.terms') }}</RouterLink>
       </p>
     </div>
   </footer>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
+import { computed, nextTick, onMounted, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import { legalBodies, legalTitles, type LegalDoc, type LegalLocale } from '../data/legal'
 
 // /privacy, /terms, and /Privacyandterms (the old mobile app's link) all land here.
@@ -15,6 +15,22 @@ const body = computed(() => legalBodies[props.doc][lang.value])
 const tabs = computed(() =>
   (['privacy', 'terms'] as const).map((doc) => ({ doc, to: '/' + doc, label: legalTitles[doc][lang.value] })),
 )
+
+// Links like /privacy#uz-11 (and /delete-account, which redirects there): the text is rendered
+// with v-html after the page transition, so jump to the section once it exists.
+const route = useRoute()
+onMounted(async () => {
+  if (!route.hash) return
+  await nextTick()
+  for (let i = 0; i < 20; i++) {
+    const el = document.getElementById(decodeURIComponent(route.hash.slice(1)))
+    if (el) {
+      el.scrollIntoView({ block: 'start' })
+      return
+    }
+    await new Promise((r) => setTimeout(r, 50))
+  }
+})
 
 watchEffect(() => {
   document.title = `${legalTitles[props.doc][lang.value]} — lms.uz`
